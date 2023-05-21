@@ -232,17 +232,29 @@ namespace communication
 
         /**
          * @brief   Konstruktor der Klasse Nunchuk.
-         *          Initialisiert die Memeber mit den Neutralwerten.
+         *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz (Standard: Fast-Mode) und Adresse (Standard: 0x52).
+         * 
+         * @param mode Taktfrequenz der I2C-Schnittstelle
+         * @param addr I2C-Adresse des korrespondierenden Nunchuks
          */
-        Nunchuk();
+        Nunchuk(const uint8_t addr, const ClockMode mode);
 
         /**
          * @brief   Konstruktor der Klasse Nunchuk.
-         *          Initialisiert die Memeber mit den Neutralwerten und definiert die Adresse des Nunchuks
+         *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz (Standard: Fast-Mode) und Adresse (Standard: 0x52).
+         *          Aktiviert außerdem den Enablepin des Pegelwandlers.
          *
-         * @addr    I2C-Adresse des korrespondierenden Nunchuks
+         * @param addr I2C-Adresse des korrespondierenden Nunchuks
+         * @param lvlshft Enable-Pin des Pegelwandlers für den I2C-Bus
+         * @param mode Taktfrequenz der I2C-Schnittstelle
          */
-        explicit Nunchuk(uint8_t addr);
+        Nunchuk(const uint8_t addr, const uint8_t lvlshft, const ClockMode mode);
+
+        /**
+         * @brief   Destruktor der Klasse Nunchuk.
+         *          Gibt den I2C-Bus wieder frei.
+         */
+        ~Nunchuk();
 
         // Getter und Setter
 

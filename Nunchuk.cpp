@@ -84,21 +84,34 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
   }
 }
 
-  bool Nunchuk::m_isSerialInit{false};
-  bool Nunchuk::m_isWireInit{false};
-
-	Nunchuk::Nunchuk()
-        : Nunchuk(static_cast<uint8_t>(0x00))
-    {
-    }
-
-    Nunchuk::Nunchuk(uint8_t addr)
-        : m_clock{ BusControl::I2C_CLOCK_STANDARD_100_kHz },
-        m_addr { addr },
+    Nunchuk::Nunchuk(const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
+        : m_addr { addr },
+        m_pinLevelshifter { 0xFF },
         m_raw { 0x00 },
         m_isConnected{ false },
         m_lastError{ ExitCodes::NO_ERROR }
     {
+      Wire.begin();
+      Wire.setClock(static_cast<uint32_t>(mode));
+    }
+
+    Nunchuk::Nunchuk(const uint8_t addr = Control::ADDR_NUNCHUK, const uint8_t lvlshft, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
+        : m_addr { addr },
+        m_pinLevelshifter { lvlshft },
+        m_raw { 0x00 },
+        m_isConnected{ false },
+        m_lastError{ ExitCodes::NO_ERROR }
+    {
+      Wire.begin();
+      Wire.setClock(static_cast<uint32_t>(mode));
+
+      pinMode(m_pinLevelshifter, OUTPUT);
+      digitalWrite(m_pinLevelshifter, LOW);
+    }
+
+    Nunchuk::~Nunchuk()
+    {
+      Wire.end();
     }
 
     const uint8_t Nunchuk::getAddress()
