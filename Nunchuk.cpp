@@ -328,12 +328,18 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
     void Nunchuk::enable() const
     {
+      if (m_pinLevelshifter == 0xFF)
+        return;
+
       serialverbose("Pegelwandler aktiviert.");
       digitalWrite(m_pinLevelshifter, HIGH);
     }
 
     void Nunchuk::disable() const
     {
+      if (m_pinLevelshifter == 0xFF)
+        return;
+        
       serialverbose("Pegelwandler deaktiviert.")
       digitalWrite(m_pinLevelshifter, LOW);
     }
