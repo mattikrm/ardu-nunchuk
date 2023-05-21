@@ -42,28 +42,28 @@ namespace communication
 
     // Exitcodes der Methoden
     enum class ExitCode : uint16_t
-        {
-            // kein Fehler
-            NO_ERROR = 0,
+    {
+        // kein Fehler
+        NO_ERROR = 0,
 
-            // allgemeiner Fehler
-            ERROR_OCCURED,
+        // allgemeiner Fehler
+        ERROR_OCCURED,
 
-            // ungültiger Wert
-            BAD_VALUE,
+        // ungültiger Wert
+        BAD_VALUE,
 
-            // keine Verbindung zum Nunchuk möglich
-            NOT_CONNECTED,
+        // keine Verbindung zum Nunchuk möglich
+        NOT_CONNECTED,
 
-            // Datentyp nicht initialisiert
-            NOT_INITIALIZED,
+        // Datentyp nicht initialisiert
+        NOT_INITIALIZED,
 
-            // keine Daten vorliegend
+        // keine Daten vorliegend
         NO_DATA_AVAILABLE,
 
         // Timeout wurde überschritten
         TIMEOUT
-        };
+    };
 
     // I2C Bus Taktfrequenzen
     enum class ClockMode : uint32_t
@@ -89,13 +89,13 @@ namespace communication
 
     // Mittenwert des Joysticks in angegebener Richtung
     namespace Joystick
-        {
+    {
         using JoystickConstant = const int8_t;
 
-            // Mittenwert des Joysticks (links <-> rechts)
+        // Mittenwert des Joysticks (links <-> rechts)
         constexpr JoystickConstant X_NULL{0x7D};
 
-            // Mittenwert des Joysticks (oben <-> unten)
+        // Mittenwert des Joysticks (oben <-> unten)
         constexpr JoystickConstant Y_NULL{0x7E};
     };
 
@@ -104,13 +104,13 @@ namespace communication
     {
         using AccelerationConstant = const int16_t;
 
-            // Neutralwert des Gyrosensors (links <-> rechts)
+        // Neutralwert des Gyrosensors (links <-> rechts)
         constexpr AccelerationConstant X_NULL{512};
 
-            // Neutralwert des Gyrosensors (vor <-> zurück)
+        // Neutralwert des Gyrosensors (vor <-> zurück)
         constexpr AccelerationConstant Y_NULL{512};
 
-            // Neutralwert des Gyrosensors (oben <-> unten)
+        // Neutralwert des Gyrosensors (oben <-> unten)
         constexpr AccelerationConstant Z_NULL{512};
     };
 
@@ -119,25 +119,25 @@ namespace communication
     {
         using ControlConstant = const uint8_t;
 
-            // Länge des Arrays für Sensorendaten
+        // Länge des Arrays für Sensorendaten
         constexpr ControlConstant LEN_RAW_DATA{6};
 
-            // Länge des Arrays für Kalibrierungsdaten
+        // Länge des Arrays für Kalibrierungsdaten
         constexpr ControlConstant LEN_CAL_DATA{16};
 
-            // I2C-Adresse des Nunchuks
+        // I2C-Adresse des Nunchuks
         constexpr ControlConstant ADDR_NUNCHUK{0x52};
 
-            // Registeradresse der Sensorendaten
+        // Registeradresse der Sensorendaten
         constexpr ControlConstant REG_RAW_DATA{0x00};
 
-            // Registeradresse der Kalibrierungsdaten
+        // Registeradresse der Kalibrierungsdaten
         constexpr ControlConstant REG_CAL_DATA{0x20};
 
-            // Registeradresse der Nunchuk-ID
+        // Registeradresse der Nunchuk-ID
         constexpr ControlConstant REG_ID{0xFA};
 
-            // Registeradresse zum Überprüfen des Verschlüsselungsstatus
+        // Registeradresse zum Überprüfen des Verschlüsselungsstatus
         constexpr ControlConstant REG_IS_ENCR{0};
     };
 
@@ -147,24 +147,24 @@ namespace communication
     {
         using BitmaskConstant = const uint8_t;
 
-            // Bit 0 des zusammengesetzten Registers
-            // entspricht Gedrücktstatus des Buttons Z [1 = pressed/0 = released]
+        // Bit 0 des zusammengesetzten Registers
+        // entspricht Gedrücktstatus des Buttons Z [1 = pressed/0 = released]
         constexpr BitmaskConstant BUTTON_Z_STATE{0x01};
 
-            // Bit 1 des zusammengesetzten Regosters
-            // entspricht Gedrücktstatus des Buttons C [1 = pressed/0 = released]]
+        // Bit 1 des zusammengesetzten Regosters
+        // entspricht Gedrücktstatus des Buttons C [1 = pressed/0 = released]]
         constexpr BitmaskConstant BUTTON_C_STATE{0x02};
 
-            // Bits [3:2] des zusammengesetzten Registers;
-            // entsprechen Bits [1:0] des Beschleunigungswertes in X-Richtung (rechts - links)
+        // Bits [3:2] des zusammengesetzten Registers;
+        // entsprechen Bits [1:0] des Beschleunigungswertes in X-Richtung (rechts - links)
         constexpr BitmaskConstant ACC_X_BIT_0_1{0x0C};
 
-            // Bits [5:4] des zusammengesetzten Registers
-            // entsprechen Bits [1:0] des Beschleunigungswertes in Y-Richtung (vorne - hinten)
+        // Bits [5:4] des zusammengesetzten Registers
+        // entsprechen Bits [1:0] des Beschleunigungswertes in Y-Richtung (vorne - hinten)
         constexpr BitmaskConstant ACC_Y_BIT_0_1{0x30};
 
-            // Bits [7:6] des zusammengesetzten Registers
-            // entsprechen Bits [1:0] des Beschleunigungswertes in Z-Richtung (oben - unten)
+        // Bits [7:6] des zusammengesetzten Registers
+        // entsprechen Bits [1:0] des Beschleunigungswertes in Z-Richtung (oben - unten)
         constexpr BitmaskConstant ACC_Z_BIT_0_1{0xC0};
     };
 
@@ -243,7 +243,7 @@ namespace communication
          * @brief   Konstruktor der Klasse Nunchuk.
          *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz (Standard: Fast-Mode) und Adresse (Standard: 0x52).
          *          Aktiviert außerdem den Enablepin des Pegelwandlers.
-         *
+         * 
          * @param addr I2C-Adresse des korrespondierenden Nunchuks
          * @param lvlshft Enable-Pin des Pegelwandlers für den I2C-Bus
          * @param mode Taktfrequenz der I2C-Schnittstelle
@@ -258,48 +258,55 @@ namespace communication
 
         // Getter und Setter
 
-        /*
-         * @brief   Getter für m_addr
+        /**
+         * @brief   Liest die Adresse des korrespondierenden Nuchuks aus
+         * 
+         * @return  uint8_t I2C-Adresse des korrespondierenden Nunchuks
          */
         const uint8_t getAddress() const;
 
         /**
-         * @brief   Getter für m_isConnected
+         * @brief   Liest den Verbindungsstatus des Nuchuks aus
+         * 
+         * @return  boolean Verbindungsstatus [true: verbunden | false: nicht verbunden] 
          */
         const bool isConnected() const;
 
         /**
-         * @brief   Setter für m_clock
+         * @brief   Gibt den letzten aufgetretenen Fehler zurück
+         * 
+         * @return enum class ExitCode des letzten aufgetretenen Fehlers zurück
          */
         const ExitCode getLastError() const;
 
         // Andere Methoden
-        
+
         /**
          * @brief   Initialisierungssequenz für den Nunchuk, um mit ihm kommunizieren zu können.
+         *          Deaktiviert die Verschlüsselung.
          *
-         * @return  Exitcode der Methode
+         * @return  enum class Exitcode der Methode
          */
         ExitCode begin();
 
         /**
          * @brief   Liest die aktuellen Sensorwerte vom Nunchuk über den I2C-Bus.
          *
-         * @return  Exitcode der Mehtode
+         * @return  enum class Exitcode der Methode
          */
         ExitCode read();
 
         /**
          * @brief   Extrahiert den Gedrücktstatus des Buttons Z aus dem zusammengesetzten Register.
          *
-         * @return  Gedrücktstatus des Buttons Z [false = released/true = pressed]
+         * @return  boolean Gedrücktstatus des Buttons Z [true: gedrückt | false: losgelassen]
          */
         const bool decodeButtonZ() const;
 
         /**
          * @brief   Extrahiert den Gedrücktstatus des Buttons C aus dem zusammengesetzten Register.
          *
-         * @return  Gedrücktstatus des Buttons C [false = released/true = pressed]
+         * @return  boolean Gedrücktstatus des Buttons C [true: gedrückt | false: losgelassen]
          */
         const bool decodeButtonC() const;
 
@@ -307,7 +314,7 @@ namespace communication
          * @brief   Extrahiert die Bits [0:1] des Beschleunigungswerts in X-Richtung aus dem
          *          zusammengesetzten Register, setzt sie mit den Bits [2:1] zusammen.
          * 
-         * @return  Beschleunigungswert in X-Richtung (-512;512]
+         * @return  int16_t Beschleunigungswert in X-Richtung (-512;512]
          */
         const int16_t decodeAccelerationX() const;
 
@@ -315,7 +322,7 @@ namespace communication
          * @brief   Extrahiert die Bits [0:1] des Beschleunigungswerts in Y-Richtung aus dem
          *          zusammengesetzten Register, setzt sie mit den Bits [2:10] zusammen.
          * 
-         * @return  Beschleunigungswert in Y-Richtung (-512;512]
+         * @return  int16_t Beschleunigungswert in Y-Richtung (-512;512]
          */
         const int16_t decodeAccelerationY() const;
 
@@ -323,21 +330,21 @@ namespace communication
          * @brief   Extrahiert die Bits [0:1] des Beschleunigungswerts in Z-Richtung aus dem
          *          zusammengesetzten Register, setzt sie mit den Bits [2:10] zusammen.
          * 
-         * @return  Beschleunigungswert in Z-Richtung (-512;512]
+         * @return  int16_t Beschleunigungswert in Z-Richtung (-512;512]
          */
         const int16_t decodeAccelerationZ() const;
 
         /**
          * @brief   Subtrahiert den Mittenwert vom Registerwert für die Position in X-Richtung.
          *          
-         * @return  Position relativ zur Mitte in X-Richtung (-125;130]
+         * @return  int8_t Joystickauslenkung relativ zur Mitte in X-Richtung (-125;130]
          */
         const int8_t decodeJoystickX() const;
 
         /**
          * @brief   Subtrahiert den Mittenwert vom Registerwert für die Position in Y-Richtung.
          *          
-         * @return  Position relativ zur Mitte in Y-Richtung (-126;129]
+         * @return  int8_t Joystickauslenkung relativ zur Mitte in Y-Richtung (-126;129]
          */
         const int8_t decodeJoystickY() const;
 

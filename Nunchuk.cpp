@@ -197,46 +197,46 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
     ExitCode Nunchuk::read()
     {
-        // Falls das Gerät nicht verbunden/initialisiert ist zweimal versuchen, sonst mit Fehler
-        // zurückkehren
+      // Falls das Gerät nicht verbunden/initialisiert ist zweimal versuchen, sonst mit Fehler
+      // zurückkehren
       for (int i = 1; i < 3; i++)
+      {
+        if (m_isConnected)
         {
-            if (m_isConnected)
-            {
-              serialinfo("Nunchuk bereit zur Kommunikation");            
-              break;
-            }
-            else
-            {
-                begin();
-            }
+          serialinfo("Nunchuk bereit zur Kommunikation");            
+          break;
         }
-
-        if (!m_isConnected)
+        else
         {
+          begin();
+        }
+      }
+
+      if (!m_isConnected)
+      {
           serialerror("Verbindungsaufbau nach 3 Versuchen fehlgeschlagen.", ExitCode::NOT_CONNECTED);
           return m_lastError = ExitCode::NOT_CONNECTED;
-        }
-
-        // Rohdaten vom Gerät anfordern
+      }
+      
+      // Rohdaten vom Gerät anfordern
       enable();
 
       Wire.beginTransmission(m_addr);
       Wire.write(Control::REG_RAW_DATA);
       Wire.endTransmission(true);
 
-        delayMicroseconds(1);
+      delayMicroseconds(1);
 
       if (Wire.requestFrom(m_addr, Control::LEN_RAW_DATA) != Control::LEN_RAW_DATA)
-        {
+      {
           disable();
 
-            // falls Fehler bei der Kommunikation, das Gerät als getrennt markieren und mit
-            // Fehler zurückkehren
-            m_isConnected = false;
+          // falls Fehler bei der Kommunikation, das Gerät als getrennt markieren und mit
+          // Fehler zurückkehren
+          m_isConnected = false;
           serialerror("Übertragung fehlgeschlagen.", ExitCode::NOT_CONNECTED);
           return m_lastError = ExitCode::NOT_CONNECTED;
-        }
+      }
       disable();
 
       if constexpr (debugmode > 1)
@@ -246,10 +246,10 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
         serialverbose(msg.c_str());
       }
 
-        // empfangene Daten auslesen
+      // empfangene Daten auslesen
       for (uint8_t i = 0; (i < Control::LEN_RAW_DATA) && Wire.available(); i++)
       {
-            m_raw[i] = Wire.read();
+          m_raw[i] = Wire.read();
       }
 
       // ggf. Rohdaten ausgeben
@@ -262,7 +262,7 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
             Serial.print(" ");
           }
           Serial.println();
-        }
+      }
 
       return ExitCode::NO_ERROR;
     }
