@@ -259,7 +259,7 @@ namespace communication
         /**
          * @brief   Setter für m_clock
          */
-        void setClock(uint32_t newfreq);
+        ExitCode getLastError();
 
         // Andere Methoden
         
@@ -274,14 +274,14 @@ namespace communication
          *
          * @return  Exitcode der Methode
          */
-        uint16_t begin();
+        ExitCode begin();
 
         /**
          * @brief   Liest die aktuellen Sensorwerte vom Nunchuk über den I2C-Bus.
          *
          * @return  Exitcode der Mehtode
          */
-        uint16_t read();
+        ExitCode read();
 
         /**
          * @brief   Extrahiert den Gedrücktstatus des Buttons Z aus dem zusammengesetzten Register.
@@ -354,7 +354,7 @@ namespace communication
         uint32_t m_clock;
 
         // Code des letzten Aufgetretenen Fehlers
-        uint16_t m_lastError;
+        ExitCode m_lastError;
 
         // Verbundenheitsstatus des Geräts
         bool m_isConnected;

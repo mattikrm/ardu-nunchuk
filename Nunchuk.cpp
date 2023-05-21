@@ -156,23 +156,47 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
         // auf zweiten Initialisierungswert setzen
         Wire.write((uint8_t) 0x00);
 
-        if (Wire.endTransmission(true))
+        switch (Wire.endTransmission(true))
         {
-            // Fehlerbehandlung falls nicht auf den Bus geschrieben werden kann
-            m_isConnected = false;
-            serialerror("Nunchukinitialisierung fehlgeschlagen.", ExitCodes::NOT_CONNECTED);
-            return m_lastError = ExitCodes::NOT_CONNECTED;
-        }
-        else
-        {
+        case WireReturnCode::SUCCESS:
             m_isConnected = true;
             serialinfo("Nunchuk-Initalisierung erfolgreich.");
+            return ExitCode::NO_ERROR;
+
+        case WireReturnCode::DATA_TOO_LONG:
+          serialerror("Übertragungsfehler: Zu viele Daten für Übertragungspuffer.", ExitCode::BAD_VALUE);
+          m_lastError = ExitCode::BAD_VALUE;
+          [[fallthrough]];
+
+        case WireReturnCode::NACK_ON_ADDR:
+          serialerror("Übertragungsfehler: NACK erhalten bei Übertragung der Adresse.", ExitCode::BAD_VALUE);
+          m_lastError = ExitCode::BAD_VALUE;
+          [[fallthrough]];
+          
+        case WireReturnCode::NACK_ON_DATA:
+          serialerror("Übertragungsfehler: NACK erhalten bei Übertragung der Daten.", ExitCode::BAD_VALUE);
+          m_lastError = ExitCode::BAD_VALUE;
+          [[fallthrough]];
+
+        case WireReturnCode::OTHER:
+          serialerror("Übertragungsfehler: Allgemeiner Fehler.", ExitCode::ERROR_OCCURED);
+          m_lastError = ExitCode::ERROR_OCCURED;
+          [[fallthrough]];
+
+        case WireReturnCode::TIMEOUT:
+          serialerror("Übertragungsfehler: Nunchuk braucht zu lange zum Antworten.", ExitCode::TIMEOUT);
+          m_lastError = ExitCode::TIMEOUT;
+          [[fallthrough]];
+
+        default:
+          m_isConnected = false;
+          break;
         }
 
-        return ExitCodes::NO_ERROR;
+        return m_lastError;
     }
 
-    uint16_t Nunchuk::read()
+    ExitCode Nunchuk::read()
     {
         const char formatbuffer[100]{0x00};
         // Falls das Gerät nicht verbunden/initialisiert ist zweimal versuchen, sonst mit Fehler
@@ -234,7 +258,7 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
           Serial.println();
         }
 
-        return ExitCodes::NO_ERROR;
+      return ExitCode::NO_ERROR;
     }
 
     const bool Nunchuk::decodeButtonZ() const
