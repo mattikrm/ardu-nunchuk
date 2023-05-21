@@ -222,7 +222,7 @@ namespace communication
   // >= 0   Fehlermedlungen werden ausgegeben
   // > 0    informelle Benachrichtungen werden ausgegeben
   // > 1    erweiterte Informationen (v. a. für Debugging) werden ausgegeben
-  constexpr const int8_t debugmode{0};
+  constexpr const int8_t debugmode{2};
 
     /******************************
      * Definition der Hauptklasse *
@@ -341,6 +341,8 @@ namespace communication
          * @return  Position relativ zur Mitte in Y-Richtung (-126;129]
          */
         const int8_t decodeJoystickY() const;
+
+        void print();
 
     private:
         // Initialisierungsstatus der Wire-Bibliothek [true = initialisiert]

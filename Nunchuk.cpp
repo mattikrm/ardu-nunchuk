@@ -84,7 +84,7 @@ void serialerror(const char* annotation = nullptr, const uint16_t code = 0x00)
   }
 }
 
-  bool Nunchuk::m_isSerialInit {false};
+  bool Nunchuk::m_isSerialInit{false};
   bool Nunchuk::m_isWireInit{false};
 
 	Nunchuk::Nunchuk()
@@ -94,6 +94,7 @@ void serialerror(const char* annotation = nullptr, const uint16_t code = 0x00)
 
     Nunchuk::Nunchuk(uint8_t addr)
         : m_clock{ BusControl::I2C_CLOCK_STANDARD_100_kHz },
+        m_addr { addr },
         m_raw { 0x00 },
         m_isConnected{ false },
         m_lastError{ ExitCodes::NO_ERROR }
@@ -274,7 +275,7 @@ void serialerror(const char* annotation = nullptr, const uint16_t code = 0x00)
         return m_raw[1] - Joystick::Y_NULL;
     }
 
-/*    void Nunchuk::print()
+    void Nunchuk::print()
     {
       if (!m_isConnected)
       {
@@ -285,23 +286,22 @@ void serialerror(const char* annotation = nullptr, const uint16_t code = 0x00)
       
       Serial.print("\nDaten (dezimale Werte)\n\n");
       Serial.print("Joystick:\t\t\tX = ");
-      Serial.print(m_jsPosX, DEC);
+      Serial.print(decodeJoystickX(), DEC);
       Serial.print("\tY = ");
-      Serial.print(m_jsPosY, DEC);
+      Serial.print(decodeJoystickY(), DEC);
       Serial.println();
       Serial.print("Beschleunigung:\tX = ");
-      Serial.print(m_accX, DEC);
+      Serial.print(decodeAccelerationX(), DEC);
       Serial.print("\tY = ");
-      Serial.print(m_accY, DEC);
+      Serial.print(decodeAccelerationY(), DEC);
       Serial.print("\tZ = ");
-      Serial.print(m_accZ, DEC);
+      Serial.print(decodeAccelerationZ(), DEC);
       Serial.println();
       Serial.print("Buttons:\n\tC = ");
-      Serial.print(m_isButtonC ? "gedrückt" : "nicht gedrückt");
+      Serial.print(decodeButtonC() ? "gedrückt" : "nicht gedrückt");
       Serial.println();
       Serial.print("\tZ = ");
-      Serial.print(m_isButtonZ ? "gedrückt" : "nicht gedrückt");
+      Serial.print(decodeButtonZ() ? "gedrückt" : "nicht gedrückt");
       Serial.println();
     }
-    */
 }
