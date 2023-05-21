@@ -1,21 +1,15 @@
 #include <Wire.h>
-#include "Nunchuk.h"
+#include <Nunchuk.h>
 
 using namespace communication;
-Nunchuk dev{Control::ADDR_NUNCHUK};
-
 constexpr const uint8_t PIN_LVLSHFT_NUNCHUK{11};
+Nunchuk dev{Control::ADDR_NUNCHUK, PIN_LVLSHFT_NUNCHUK, ClockMode::I2C_CLOCK_FAST_400_kHz};
+
 
 void setup()
 {
-  // Pegelwandler initialisieren
-  pinMode(PIN_LVLSHFT_NUNCHUK, OUTPUT);
-  digitalWrite(PIN_LVLSHFT_NUNCHUK, HIGH);
-  
-  dev.libinit();
-  serialinfo("Nunchuk-Pegelwandler aktiviert. DI2C-Pegelwandler deaktiviert.");
-  dev.setClock(BusControl::I2C_CLOCK_FAST_400_kHz);
-  serialinfo("I2C-Clock Takt auf 400kHz gesetzt.");
+  Serial.begin(115200);
+  Serial.println("Serieller Monitor initialisiert");
 
   // Nunchuk initialisieren
   dev.begin();
@@ -24,14 +18,9 @@ void setup()
 void loop()
 {
   Serial.println();
-  digitalWrite(PIN_LVLSHFT_NUNCHUK, HIGH);
-  serialinfo("Pegelwandler aktiviert.");
 
   // Messwerte auslesen
   dev.read();
-
-  digitalWrite(PIN_LVLSHFT_NUNCHUK, LOW);
-  serialinfo("Pegelwandler deaktiviert.");
 
   // Messwerte auslesen
   dev.print();
