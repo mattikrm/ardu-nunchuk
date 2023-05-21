@@ -365,10 +365,7 @@ namespace communication
         uint8_t m_raw[Control::LEN_RAW_DATA];
 
         // Adresse des korrespondierenden Nunchuks
-        uint8_t m_addr;
-
-        // Taktfrequenz der I2C-Clock
-        uint32_t m_clock;
+        const uint8_t m_addr;
 
         // Code des letzten Aufgetretenen Fehlers
         ExitCode m_lastError;
