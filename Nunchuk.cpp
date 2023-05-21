@@ -132,7 +132,9 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
     ExitCode Nunchuk::begin()
     {
         serialverbose("Nunchuk-Initialisierung gestartet.");
-        delay(1);
+
+        // Initialisierungssequen
+        enable();
 
         Wire.beginTransmission(m_addr);
         // erstes Initialisierungsregister
@@ -148,6 +150,10 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
         Wire.write(static_cast<uint8_t>(0xFB));
         // auf zweiten Initialisierungswert setzen
         Wire.write(static_cast<uint8_t>(0x00));
+
+        disable();
+
+        delay(1);
 
         switch (Wire.endTransmission(true))
         {
@@ -213,22 +219,25 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
         }
 
         // Rohdaten vom Gerät anfordern
+      enable();
 
       Wire.beginTransmission(m_addr);
       Wire.write(Control::REG_RAW_DATA);
       Wire.endTransmission(true);
+
         delayMicroseconds(1);
 
       if (Wire.requestFrom(m_addr, Control::LEN_RAW_DATA) != Control::LEN_RAW_DATA)
         {
+          disable();
+
             // falls Fehler bei der Kommunikation, das Gerät als getrennt markieren und mit
             // Fehler zurückkehren
             m_isConnected = false;
           serialerror("Übertragung fehlgeschlagen.", ExitCode::NOT_CONNECTED);
           return m_lastError = ExitCode::NOT_CONNECTED;
         }
-
-        static uint16_t i = 0;
+      disable();
 
       if constexpr (debugmode > 1)
       {
