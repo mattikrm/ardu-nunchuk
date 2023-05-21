@@ -261,17 +261,17 @@ namespace communication
         /*
          * @brief   Getter für m_addr
          */
-        const uint8_t getAddress();
+        const uint8_t getAddress() const;
 
         /**
          * @brief   Getter für m_isConnected
          */
-        bool isConnected();
+        const bool isConnected() const;
 
         /**
          * @brief   Setter für m_clock
          */
-        ExitCode getLastError();
+        const ExitCode getLastError() const;
 
         // Andere Methoden
         

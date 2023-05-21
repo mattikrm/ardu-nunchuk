@@ -114,14 +114,19 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
       Wire.end();
     }
 
-    const uint8_t Nunchuk::getAddress()
+    const uint8_t Nunchuk::getAddress() const
     {
         return m_addr;
     }
 
-    bool Nunchuk::isConnected()
+    const bool Nunchuk::isConnected() const
     {
         return m_isConnected;
+    }
+
+    const ExitCode getLastError() const
+    {
+      return m_lastError;
     }
 
     ExitCode Nunchuk::begin()
