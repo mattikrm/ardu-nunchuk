@@ -124,33 +124,8 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
         return m_isConnected;
     }
 
-    void Nunchuk::setClock(uint32_t newfreq)
+    ExitCode Nunchuk::begin()
     {
-      m_clock = newfreq;
-    }
-
-    void Nunchuk::libinit()
-    {
-        if (!Nunchuk::m_isSerialInit)
-        {
-            Serial.begin(115200);
-            m_isSerialInit = true;
-            serialinfo("Serial-Bibliothek erfolgreich initialisiert.");
-        }
-        if (!Nunchuk::m_isWireInit)
-        {
-            Wire.begin();
-            Wire.setClock(m_clock);
-            m_isWireInit = true;
-            serialinfo("Wire-Bibliothek erfolgreich initialisiert.");
-        }
-    }
-
-    uint16_t Nunchuk::begin()
-    {
-        if (!Nunchuk::m_isSerialInit || !Nunchuk::m_isWireInit)
-            libinit();
-
         serialverbose("Nunchuk-Initialisierung gestartet.");
         delay(1);
 
@@ -340,5 +315,17 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
       Serial.print("\tZ = ");
       Serial.print(decodeButtonZ() ? "gedrückt" : "nicht gedrückt");
       Serial.println();
+    }
+
+    void Nunchuk::enable() const
+    {
+      serialverbose("Pegelwandler aktiviert.");
+      digitalWrite(m_pinLevelshifter, HIGH);
+    }
+
+    void Nunchuk::disable() const
+    {
+      serialverbose("Pegelwandler deaktiviert.")
+      digitalWrite(m_pinLevelshifter, LOW);
     }
 }

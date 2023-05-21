@@ -350,11 +350,22 @@ namespace communication
         void print();
 
     private:
-        // Initialisierungsstatus der Wire-Bibliothek [true = initialisiert]
-        static bool m_isWireInit;
+        /**
+         * @brief   Setzt den enable-Pin des Levelshifters auf HIGH
+         * 
+         * @return  none
+         */
+        void enable() const;
+        
+        /**
+         * @brief   Setzt den enable-Pin des Levelshifters auf LOW
+         * 
+         * @return  none
+         */
+        void disable() const;
 
-        // Initialisierungsstatus der Serial-Bibliothek [true = initialisiert]
-        static bool m_isSerialInit;
+        // Enable Pin des Pegelwandlers für den I2C-Bus
+        const uint8_t m_pinLevelshifter;
 
         // Rohdaten vom Nunchuk
         uint8_t m_raw[Control::LEN_RAW_DATA];
