@@ -251,29 +251,29 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
     const bool Nunchuk::decodeButtonZ() const
     {
-        return static_cast<bool>(!((m_raw[5] & Bitmasks::BUTTON_Z_STATE) >> 0));
+        return !static_cast<bool>((m_raw[5] & Bitmasks::BUTTON_Z_STATE) >> 0);
     }
 
     const bool Nunchuk::decodeButtonC() const
     {
-        return static_cast<bool>(!((m_raw[5] & Bitmasks::BUTTON_C_STATE) >> 1));
+        return !static_cast<bool>((m_raw[5] & Bitmasks::BUTTON_C_STATE) >> 1);
     }
 
     const int16_t Nunchuk::decodeAccelerationX() const
     {
-        return static_cast<int16_t>((m_raw[2] << 2) | (static_cast<uint16_t>((m_raw[5] & Bitmasks::ACC_X_BIT_0_1) >> 2))
+        return static_cast<int16_t>((m_raw[2] << 2) | (static_cast<uint16_t>((m_raw[5] >> 2) & Bitmasks::ACC_X_BIT_0_1))
             - Acceleration::X_NULL);
     }
 
     const int16_t Nunchuk::decodeAccelerationY() const
     {
-        return static_cast<int16_t>((m_raw[3] << 2) | (static_cast<uint16_t>((m_raw[5] & Bitmasks::ACC_Y_BIT_0_1) >> 4))
+        return static_cast<int16_t>((m_raw[3] << 2) | (static_cast<uint16_t>((m_raw[5] >> 4) & Bitmasks::ACC_Y_BIT_0_1))
             - Acceleration::Y_NULL);
     }
 
     const int16_t Nunchuk::decodeAccelerationZ() const
     {
-        return static_cast<int16_t>((m_raw[4] << 2) | (static_cast<uint16_t>((m_raw[5] & Bitmasks::ACC_Z_BIT_0_1) >> 6))
+        return static_cast<int16_t>((m_raw[4] << 2) | (static_cast<uint16_t>((m_raw[5]>> 6) & Bitmasks::ACC_Z_BIT_0_1) )
             - Acceleration::Z_NULL);
     }
 
