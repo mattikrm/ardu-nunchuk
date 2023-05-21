@@ -37,15 +37,11 @@
 namespace communication
 {
     /**************************
-     * Definitionen von enums *
+     * Definitionen von Konstanten *
      **************************/
 
     // Exitcodes der Methoden
-    struct ExitCodes
-    {
-        using T = uint16_t;
-
-        enum local : T
+    enum class ExitCode : uint16_t
         {
             // kein Fehler
             NO_ERROR = 0,
@@ -63,116 +59,113 @@ namespace communication
             NOT_INITIALIZED,
 
             // keine Daten vorliegend
-            NO_DATA_AVAILABLE
+        NO_DATA_AVAILABLE,
+
+        // Timeout wurde überschritten
+        TIMEOUT
         };
+
+    // I2C Bus Taktfrequenzen
+    enum class ClockMode : uint32_t
+    {
+        // I2C-Frequenz im Standardmode
+        I2C_CLOCK_STANDARD_100_kHz = 100000,
+
+        // I2C-Frequenz im Fastmode
+        I2C_CLOCK_FAST_400_kHz = 400000
+    };
+
+    namespace WireReturnCode
+    {
+        using WireReturnConstant = const uint16_t;
+
+        constexpr WireReturnConstant SUCCESS{0};
+        constexpr WireReturnConstant DATA_TOO_LONG{1};
+        constexpr WireReturnConstant NACK_ON_ADDR{2};
+        constexpr WireReturnConstant NACK_ON_DATA{3};
+        constexpr WireReturnConstant OTHER{4};
+        constexpr WireReturnConstant TIMEOUT{5};
     };
 
     // Mittenwert des Joysticks in angegebener Richtung
-    struct Joystick
-    {
-        using T = int8_t;
-
-        enum local : T
+    namespace Joystick
         {
+        using JoystickConstant = const int8_t;
+
             // Mittenwert des Joysticks (links <-> rechts)
-            X_NULL = 0x7D,
+        constexpr JoystickConstant X_NULL{0x7D};
 
             // Mittenwert des Joysticks (oben <-> unten)
-            Y_NULL = 0x7E
-        };
+        constexpr JoystickConstant Y_NULL{0x7E};
     };
 
     // Neutralwert der Gyrosensoren in angebener Richtung
-    struct Acceleration
+    namespace Acceleration
     {
-        using T = int16_t;
+        using AccelerationConstant = const int16_t;
 
-        enum local : T
-        {
             // Neutralwert des Gyrosensors (links <-> rechts)
-            X_NULL = 512,
+        constexpr AccelerationConstant X_NULL{512};
 
             // Neutralwert des Gyrosensors (vor <-> zurück)
-            Y_NULL = 512,
+        constexpr AccelerationConstant Y_NULL{512};
 
             // Neutralwert des Gyrosensors (oben <-> unten)
-            Z_NULL = 512
-        };
+        constexpr AccelerationConstant Z_NULL{512};
     };
 
     // Allgemeine Standardwerte
-    struct Control
+    namespace Control
     {
-        using T = uint8_t;
+        using ControlConstant = const uint8_t;
 
-        enum local : T
-        {
             // Länge des Arrays für Sensorendaten
-            LEN_RAW_DATA = 6,
+        constexpr ControlConstant LEN_RAW_DATA{6};
 
             // Länge des Arrays für Kalibrierungsdaten
-            LEN_CAL_DATA = 16,
+        constexpr ControlConstant LEN_CAL_DATA{16};
 
             // I2C-Adresse des Nunchuks
-            ADDR_NUNCHUK = 0x52,
+        constexpr ControlConstant ADDR_NUNCHUK{0x52};
 
             // Registeradresse der Sensorendaten
-            REG_RAW_DATA = 0x00,
+        constexpr ControlConstant REG_RAW_DATA{0x00};
 
             // Registeradresse der Kalibrierungsdaten
-            REG_CAL_DATA = 0x20,
+        constexpr ControlConstant REG_CAL_DATA{0x20};
 
             // Registeradresse der Nunchuk-ID
-            REG_ID = 0xFA,
+        constexpr ControlConstant REG_ID{0xFA};
 
             // Registeradresse zum Überprüfen des Verschlüsselungsstatus
-            REG_IS_ENCR
-        };
-    };
-
-    // I2C Bus Einstellungen
-    struct BusControl
-    {
-        using T = uint32_t;
-
-        enum local : T
-        {
-            // I2C-Frequenz im Standardmode
-            I2C_CLOCK_STANDARD_100_kHz = 100000,
-
-            // I2C-Frequenz im Fastmode
-            I2C_CLOCK_FAST_400_kHz = 400000
-        };
+        constexpr ControlConstant REG_IS_ENCR{0};
     };
 
     
     // Bitmasken der zusammengesetzten Register, die der Nunchuck ausgibt
-    struct Bitmasks
+    namespace Bitmask
     {
-        using T = uint8_t;
+        using BitmaskConstant = const uint8_t;
 
-        enum local : T
-        {
             // Bit 0 des zusammengesetzten Registers
             // entspricht Gedrücktstatus des Buttons Z [1 = pressed/0 = released]
-            BUTTON_Z_STATE = 0x01,
+        constexpr BitmaskConstant BUTTON_Z_STATE{0x01};
 
             // Bit 1 des zusammengesetzten Regosters
             // entspricht Gedrücktstatus des Buttons C [1 = pressed/0 = released]]
-            BUTTON_C_STATE = 0x02,
+        constexpr BitmaskConstant BUTTON_C_STATE{0x02};
 
             // Bits [3:2] des zusammengesetzten Registers;
             // entsprechen Bits [1:0] des Beschleunigungswertes in X-Richtung (rechts - links)
-            ACC_X_BIT_0_1 = 0x0C,
+        constexpr BitmaskConstant ACC_X_BIT_0_1{0x0C};
 
             // Bits [5:4] des zusammengesetzten Registers
             // entsprechen Bits [1:0] des Beschleunigungswertes in Y-Richtung (vorne - hinten)
-            ACC_Y_BIT_0_1 = 0x30,
+        constexpr BitmaskConstant ACC_Y_BIT_0_1{0x30};
 
             // Bits [7:6] des zusammengesetzten Registers
             // entsprechen Bits [1:0] des Beschleunigungswertes in Z-Richtung (oben - unten)
-            ACC_Z_BIT_0_1 = 0xC0
-        };
+        constexpr BitmaskConstant ACC_Z_BIT_0_1{0xC0};
     };
 
     /************************************

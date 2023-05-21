@@ -69,7 +69,7 @@ void serialinfo(const char* annotation = nullptr)
   }
 }
 
-void serialerror(const char* annotation = nullptr, const uint16_t code = 0x00)
+void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 {
   if constexpr (debugmode >= 0)
   {
@@ -79,7 +79,7 @@ void serialerror(const char* annotation = nullptr, const uint16_t code = 0x00)
   static const char buffer[270] = {0x00};
   static_assert(sizeof(annotation) <= 255, "Annotation zu lang. Maximal 255 Zeichen zulässig.");
 
-  sprintf(buffer, "%s (Code: %X#02)", annotation, code);
+  sprintf(buffer, "%s (Code: %X)", annotation, static_cast<uint16_t>(code));
   serialwrite("error", buffer);
   }
 }
