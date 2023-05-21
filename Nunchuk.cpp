@@ -136,18 +136,18 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
         Wire.beginTransmission(m_addr);
         // erstes Initialisierungsregister
-        Wire.write((uint8_t) 0xF0);
+        Wire.write(static_cast<uint8_t>(0xF0));
         // auf ersten Initialisierungswert setzen
-        Wire.write((uint8_t) 0x55);
+        Wire.write(static_cast<uint8_t>(0x55));
         Wire.endTransmission(true);
 
         delay(1);
 
         Wire.beginTransmission(m_addr);
         // zweites Initialisierungsregister
-        Wire.write((uint8_t) 0xFB);
+        Wire.write(static_cast<uint8_t>(0xFB));
         // auf zweiten Initialisierungswert setzen
-        Wire.write((uint8_t) 0x00);
+        Wire.write(static_cast<uint8_t>(0x00));
 
         switch (Wire.endTransmission(true))
         {
@@ -191,10 +191,9 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
     ExitCode Nunchuk::read()
     {
-        const char formatbuffer[100]{0x00};
         // Falls das Gerät nicht verbunden/initialisiert ist zweimal versuchen, sonst mit Fehler
         // zurückkehren
-        for (int i = 0; i < 2; i++)
+      for (int i = 1; i < 3; i++)
         {
             if (m_isConnected)
             {
@@ -203,47 +202,52 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
             }
             else
             {
-                sprintf(formatbuffer, "Verbindungsaufbau fehlgeschlagen. Versuch %i1/3", i+1);
-                serialinfo(formatbuffer);
                 begin();
             }
         }
 
         if (!m_isConnected)
         {
-            serialerror("Verbindungsaufbau fehlgeschlagen. Versuch 3/3.", ExitCodes::NOT_CONNECTED);
-            return m_lastError = ExitCodes::NOT_CONNECTED;
+          serialerror("Verbindungsaufbau nach 3 Versuchen fehlgeschlagen.", ExitCode::NOT_CONNECTED);
+          return m_lastError = ExitCode::NOT_CONNECTED;
         }
 
         // Rohdaten vom Gerät anfordern
+
+      Wire.beginTransmission(m_addr);
+      Wire.write(Control::REG_RAW_DATA);
+      Wire.endTransmission(true);
         delayMicroseconds(1);
 
-        if (!Wire.requestFrom(m_addr, static_cast<uint8_t>(Control::LEN_RAW_DATA)))
+      if (Wire.requestFrom(m_addr, Control::LEN_RAW_DATA) != Control::LEN_RAW_DATA)
         {
             // falls Fehler bei der Kommunikation, das Gerät als getrennt markieren und mit
             // Fehler zurückkehren
             m_isConnected = false;
-            serialerror("Übertragung fehlgeschlagen.", ExitCodes::NOT_CONNECTED);
-            return m_lastError = ExitCodes::NOT_CONNECTED;
+          serialerror("Übertragung fehlgeschlagen.", ExitCode::NOT_CONNECTED);
+          return m_lastError = ExitCode::NOT_CONNECTED;
         }
 
         static uint16_t i = 0;
 
-        sprintf(formatbuffer, "Anzahl der verfügbaren Bytes: %i", Wire.available());
-        serialverbose(formatbuffer);
+      if constexpr (debugmode > 1)
+      {
+        auto msg = String("Anzahl der verfügbaren Bytes: ");
+        msg += String(Wire.available());
+        serialverbose(msg.c_str());
+      }
 
         // empfangene Daten auslesen
-        for (i = 0; (i < Control::LEN_RAW_DATA) && Wire.available(); i++)
+      for (uint8_t i = 0; (i < Control::LEN_RAW_DATA) && Wire.available(); i++)
+      {
             m_raw[i] = Wire.read();
-        
-        Wire.beginTransmission(m_addr);
-        Wire.write(Control::REG_RAW_DATA);
-        Wire.endTransmission(true);
+      }
 
+      // ggf. Rohdaten ausgeben
+      if constexpr (debugmode > 0)
+      {
         serialinfo("Rohdaten:");
-        if (debugmode > 0)
-        {
-          for (int i = 0; i < Control::LEN_RAW_DATA; i++)
+          for (uint8_t i = 0; i < Control::LEN_RAW_DATA; i++)
           {
             Serial.print(m_raw[i], HEX);
             Serial.print(" ");
