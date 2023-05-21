@@ -275,12 +275,6 @@ namespace communication
 
         // Andere Methoden
         
-        /*
-         * @brief   Initialisiert die erforderlichen Bibliotheken und Peripherie.
-         *          Sollte vor Nunchuk::begin() aufgerufen werden.
-         */
-        void libinit();
-
         /**
          * @brief   Initialisierungssequenz für den Nunchuk, um mit ihm kommunizieren zu können.
          *
