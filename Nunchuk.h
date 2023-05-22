@@ -248,7 +248,7 @@ namespace communication
          * @param lvlshft Enable-Pin des Pegelwandlers für den I2C-Bus
          * @param mode Taktfrequenz der I2C-Schnittstelle
          */
-        Nunchuk(const uint8_t addr, const uint8_t lvlshft, const ClockMode mode);
+        explicit Nunchuk(const uint8_t lvlshft, const uint8_t addr, const ClockMode mode);
 
         /**
          * @brief   Destruktor der Klasse Nunchuk.

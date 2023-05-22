@@ -95,7 +95,7 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
       Wire.setClock(static_cast<uint32_t>(mode));
     }
 
-    Nunchuk::Nunchuk(const uint8_t addr = Control::ADDR_NUNCHUK, const uint8_t lvlshft, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
+    explicit Nunchuk::Nunchuk(const uint8_t lvlshft, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
         : m_addr { addr },
         m_pinLevelshifter { lvlshft },
         m_raw { 0x00 },
