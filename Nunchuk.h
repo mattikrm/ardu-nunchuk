@@ -235,9 +235,10 @@ namespace communication
          *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz (Standard: Fast-Mode) und Adresse (Standard: 0x52).
          * 
          * @param mode Taktfrequenz der I2C-Schnittstelle
+         * @param cycletime Zykluszeit nach der wieder Daten angefordert werden
          * @param addr I2C-Adresse des korrespondierenden Nunchuks
          */
-        Nunchuk(const uint8_t addr, const ClockMode mode);
+        Nunchuk(const unsigned long cycletime, const uint8_t addr, const ClockMode mode);
 
         /**
          * @brief   Konstruktor der Klasse Nunchuk.
@@ -246,9 +247,10 @@ namespace communication
          * 
          * @param addr I2C-Adresse des korrespondierenden Nunchuks
          * @param lvlshft Enable-Pin des Pegelwandlers für den I2C-Bus
+         * @param cycletime Zykluszeit nach der wieder Daten angefordert werden
          * @param mode Taktfrequenz der I2C-Schnittstelle
          */
-        explicit Nunchuk(const uint8_t lvlshft, const uint8_t addr, const ClockMode mode);
+        explicit Nunchuk(const uint8_t lvlshft, const unsigned long cycletime, const uint8_t addr, const ClockMode mode);
 
         /**
          * @brief   Destruktor der Klasse Nunchuk.
@@ -379,6 +381,12 @@ namespace communication
 
         // Verbundenheitsstatus des Geräts
         bool m_isConnected;
+
+        // Zeitspanne nach der erneut Daten vom Nunchuk angefordert werden
+        const unsigned long m_cycleTime;
+
+        // Zeitpunkt zu dem zuletzt neue Daten angefordert wurden
+        unsigned long m_lastFetch;
     };
 }
 #endif // !NUNCHUK_H

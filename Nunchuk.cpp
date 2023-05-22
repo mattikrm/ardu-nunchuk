@@ -84,23 +84,27 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
   }
 }
 
-    Nunchuk::Nunchuk(const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
+    Nunchuk::Nunchuk(const unsigned long cycletime = 30, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
         : m_addr { addr },
         m_pinLevelshifter { 0xFF },
         m_raw { 0x00 },
         m_isConnected{ false },
-        m_lastError{ ExitCodes::NO_ERROR }
+        m_lastError{ ExitCodes::NO_ERROR },
+        m_cycleTime { cycletime },
+        m_lastFetch { millis(); }
     {
       Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
     }
 
-    explicit Nunchuk::Nunchuk(const uint8_t lvlshft, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
+    explicit Nunchuk::Nunchuk(const uint8_t lvlshft, const unsigned long cycletime = 30, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
         : m_addr { addr },
         m_pinLevelshifter { lvlshft },
         m_raw { 0x00 },
         m_isConnected{ false },
-        m_lastError{ ExitCodes::NO_ERROR }
+        m_lastError{ ExitCodes::NO_ERROR },
+        m_cycleTime { cycletime },
+        m_lastFetch { millis(); }
     {
       Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
@@ -197,6 +201,12 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
     ExitCode Nunchuk::read()
     {
+      // erst lesen, wenn die Zykluszeit vorbei ist
+      if ((millis() - m_lastFetch) < m_cycletime)
+        return ExitCode::NO_ERROR;
+
+      m_lastFetch = millis();
+
       // Falls das Gerät nicht verbunden/initialisiert ist zweimal versuchen, sonst mit Fehler
       // zurückkehren
       for (int i = 1; i < 3; i++)
