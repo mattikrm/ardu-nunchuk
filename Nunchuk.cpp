@@ -352,6 +352,7 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
       serialverbose("Pegelwandler aktiviert.");
       digitalWrite(m_pinLevelshifter, HIGH);
+      delayMicroseconds(500);
     }
 
     void Nunchuk::disable() const
@@ -361,5 +362,6 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
         
       serialverbose("Pegelwandler deaktiviert.")
       digitalWrite(m_pinLevelshifter, LOW);
+      delayMicroseconds(500);
     }
 }
