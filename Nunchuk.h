@@ -297,6 +297,20 @@ namespace communication
          * @return  enum class Exitcode der Methode
          */
         State read();
+        
+        /**
+         * @brief Bestimmt den Gedrücktzustand des Buttons C
+         * 
+         * @return  boolean Gedrücktstatus des Buttons C [true: gedrückt | false: losgelassen]
+         */
+        const bool pressedC();
+
+        /**
+         * @brief Bestimmt den Gedrücktzustand des Buttons Z
+         * 
+         * @return  boolean Gedrücktstatus des Buttons Z [true: gedrückt | false: losgelassen]
+         */
+        const bool pressedZ();
 
         /**
          * @brief   Extrahiert den Gedrücktstatus des Buttons Z aus dem zusammengesetzten Register.

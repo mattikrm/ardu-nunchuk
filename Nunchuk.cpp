@@ -276,6 +276,16 @@ void serialerror(const char* annotation, const State code)
       return m_state;
     }
 
+    const bool Nunchuk::pressedC()
+    {
+      return m_buttonC.isPressed();
+    }
+
+    const bool Nunchuk::pressedZ()
+    {
+      return m_buttonZ.isPressed();
+    }
+
     const bool Nunchuk::decodeButtonZ() const
     {
         return !static_cast<bool>((m_raw[5] & Bitmask::BUTTON_Z_STATE) >> 0);
