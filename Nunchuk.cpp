@@ -86,9 +86,8 @@ void serialerror(const char* annotation, const State code)
   }
 }
 
-    Nunchuk::Nunchuk(const unsigned long cycletime, const uint8_t addr, const ClockMode mode)
-        : m_addr { addr },
-        m_pinLevelshifter { 0xFF },
+    Nunchuk::Nunchuk(const unsigned long cycletime, const ClockMode mode)
+        : m_pinLevelshifter { 0xFF },
         m_raw { 0x00 },
         m_state{ State::BEGIN },
         m_cycletime { cycletime },
@@ -100,9 +99,8 @@ void serialerror(const char* annotation, const State code)
       Wire.setClock(static_cast<uint32_t>(mode));
     }
 
-    Nunchuk::Nunchuk(const uint8_t lvlshft, const unsigned long cycletime, const uint8_t addr, const ClockMode mode)
-        : m_addr { addr },
-        m_pinLevelshifter { lvlshft },
+    Nunchuk::Nunchuk(const uint8_t lvlshft, const unsigned long cycletime, const ClockMode mode)
+        :  m_pinLevelshifter { lvlshft },
         m_raw { 0x00 },
         m_state{ State::BEGIN },
         m_cycletime { cycletime },
@@ -120,11 +118,6 @@ void serialerror(const char* annotation, const State code)
     Nunchuk::~Nunchuk()
     {
       Wire.end();
-    }
-
-    const uint8_t Nunchuk::getAddress() const
-    {
-        return m_addr;
     }
 
     const bool Nunchuk::isConnected() const
@@ -146,7 +139,7 @@ void serialerror(const char* annotation, const State code)
       // Initialisierungssequenz
       enable();
 
-      Wire.beginTransmission(m_addr);
+      Wire.beginTransmission(Control::ADDR_NUNCHUK);
       // erstes Initialisierungsregister
       Wire.write(static_cast<uint8_t>(0xF0));
       // auf ersten Initialisierungswert setzen
@@ -155,7 +148,7 @@ void serialerror(const char* annotation, const State code)
 
       delay(1);
 
-      Wire.beginTransmission(m_addr);
+      Wire.beginTransmission(Control::ADDR_NUNCHUK);
       // zweites Initialisierungsregister
       Wire.write(static_cast<uint8_t>(0xFB));
       // auf zweiten Initialisierungswert setzen
@@ -215,13 +208,13 @@ void serialerror(const char* annotation, const State code)
         // Rohdaten vom Gerät anfordern
         enable();
 
-        Wire.beginTransmission(m_addr);
+        Wire.beginTransmission(Control::ADDR_NUNCHUK);
         Wire.write(Control::REG_RAW_DATA);
         Wire.endTransmission(true);
 
         delayMicroseconds(1);
 
-        if (Wire.requestFrom(m_addr, Control::LEN_RAW_DATA) != Control::LEN_RAW_DATA)
+        if (Wire.requestFrom(Control::ADDR_NUNCHUK, Control::LEN_RAW_DATA) != Control::LEN_RAW_DATA)
         {
   
             // falls Fehler bei der Kommunikation, das Gerät als getrennt markieren und mit

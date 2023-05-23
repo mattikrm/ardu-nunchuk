@@ -245,21 +245,19 @@ namespace communication
          * 
          * @param mode Taktfrequenz der I2C-Schnittstelle
          * @param cycletime Zykluszeit nach der wieder Daten angefordert werden
-         * @param addr I2C-Adresse des korrespondierenden Nunchuks
          */
-        Nunchuk(const unsigned long cycletime = 30, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
+        Nunchuk(const unsigned long cycletime = 30, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
 
         /**
          * @brief   Konstruktor der Klasse Nunchuk.
          *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz (Standard: Fast-Mode) und Adresse (Standard: 0x52).
          *          Aktiviert außerdem den Enablepin des Pegelwandlers.
          * 
-         * @param addr I2C-Adresse des korrespondierenden Nunchuks
          * @param lvlshft Enable-Pin des Pegelwandlers für den I2C-Bus
          * @param cycletime Zykluszeit nach der wieder Daten angefordert werden
          * @param mode Taktfrequenz der I2C-Schnittstelle
          */
-        explicit Nunchuk(const uint8_t lvlshft, const unsigned long cycletime = 30, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
+        explicit Nunchuk(const uint8_t lvlshft, const unsigned long cycletime = 30, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
 
         /**
          * @brief   Destruktor der Klasse Nunchuk.
@@ -268,13 +266,6 @@ namespace communication
         ~Nunchuk();
 
         // Getter und Setter
-
-        /**
-         * @brief   Liest die Adresse des korrespondierenden Nuchuks aus
-         * 
-         * @return  uint8_t I2C-Adresse des korrespondierenden Nunchuks
-         */
-        const uint8_t getAddress() const;
 
         /**
          * @brief   Liest den Verbindungsstatus des Nuchuks aus
@@ -399,9 +390,6 @@ namespace communication
 
         // Rohdaten vom Nunchuk
         uint8_t m_raw[Control::LEN_RAW_DATA];
-
-        // Adresse des korrespondierenden Nunchuks
-        const uint8_t m_addr;
 
         // aktueller Zustand des Automaten
         State m_state;
