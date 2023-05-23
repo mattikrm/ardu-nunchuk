@@ -69,14 +69,14 @@ void serialinfo(const char* annotation = nullptr)
   }
 }
 
-void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
+void serialerror(const char* annotation = nullptr, const State code)
 {
   if constexpr (debugmode >= 0)
   {
   if (!annotation)
     return;
 
-  static const char buffer[270] = {0x00};
+  static char buffer[270] = {0x00};
   static_assert(sizeof(annotation) <= 255, "Annotation zu lang. Maximal 255 Zeichen zulässig.");
 
   sprintf(buffer, "%s (Code: %X)", annotation, static_cast<uint16_t>(code));
@@ -88,10 +88,9 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
         : m_addr { addr },
         m_pinLevelshifter { 0xFF },
         m_raw { 0x00 },
-        m_isConnected{ false },
-        m_lastError{ ExitCodes::NO_ERROR },
-        m_cycleTime { cycletime },
-        m_lastFetch { millis(); }
+        m_state{ State::BEGIN },
+        m_cycletime { cycletime },
+        m_lastFetch { millis() }
     {
       Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
@@ -101,10 +100,9 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
         : m_addr { addr },
         m_pinLevelshifter { lvlshft },
         m_raw { 0x00 },
-        m_isConnected{ false },
-        m_lastError{ ExitCodes::NO_ERROR },
-        m_cycleTime { cycletime },
-        m_lastFetch { millis(); }
+        m_state{ State::BEGIN },
+        m_cycletime { cycletime },
+        m_lastFetch { millis() }
     {
       Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
@@ -125,183 +123,185 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
     const bool Nunchuk::isConnected() const
     {
-        return m_isConnected;
+        return m_state == State::CONNECTED;
     }
 
-    const ExitCode getLastError() const
+    const State Nunchuk::getState() const
     {
-      return m_lastError;
+      return m_state;
     }
 
-    ExitCode Nunchuk::begin()
+    State Nunchuk::begin()
     {
-        serialverbose("Nunchuk-Initialisierung gestartet.");
-
-        // Initialisierungssequen
-        enable();
-
-        Wire.beginTransmission(m_addr);
-        // erstes Initialisierungsregister
-        Wire.write(static_cast<uint8_t>(0xF0));
-        // auf ersten Initialisierungswert setzen
-        Wire.write(static_cast<uint8_t>(0x55));
-        Wire.endTransmission(true);
-
-        delay(1);
-
-        Wire.beginTransmission(m_addr);
-        // zweites Initialisierungsregister
-        Wire.write(static_cast<uint8_t>(0xFB));
-        // auf zweiten Initialisierungswert setzen
-        Wire.write(static_cast<uint8_t>(0x00));
-
-        disable();
-
-        delay(1);
-
-        switch (Wire.endTransmission(true))
-        {
-        case WireReturnCode::SUCCESS:
-            m_isConnected = true;
-            serialinfo("Nunchuk-Initalisierung erfolgreich.");
-            return ExitCode::NO_ERROR;
-
-        case WireReturnCode::DATA_TOO_LONG:
-          serialerror("Übertragungsfehler: Zu viele Daten für Übertragungspuffer.", ExitCode::BAD_VALUE);
-          m_lastError = ExitCode::BAD_VALUE;
-          [[fallthrough]];
-
-        case WireReturnCode::NACK_ON_ADDR:
-          serialerror("Übertragungsfehler: NACK erhalten bei Übertragung der Adresse.", ExitCode::BAD_VALUE);
-          m_lastError = ExitCode::BAD_VALUE;
-          [[fallthrough]];
-          
-        case WireReturnCode::NACK_ON_DATA:
-          serialerror("Übertragungsfehler: NACK erhalten bei Übertragung der Daten.", ExitCode::BAD_VALUE);
-          m_lastError = ExitCode::BAD_VALUE;
-          [[fallthrough]];
-
-        case WireReturnCode::OTHER:
-          serialerror("Übertragungsfehler: Allgemeiner Fehler.", ExitCode::ERROR_OCCURED);
-          m_lastError = ExitCode::ERROR_OCCURED;
-          [[fallthrough]];
-
-        case WireReturnCode::TIMEOUT:
-          serialerror("Übertragungsfehler: Nunchuk braucht zu lange zum Antworten.", ExitCode::TIMEOUT);
-          m_lastError = ExitCode::TIMEOUT;
-          [[fallthrough]];
-
-        default:
-          m_isConnected = false;
-          break;
-        }
-
-        return m_lastError;
-    }
-
-    ExitCode Nunchuk::read()
-    {
-      // erst lesen, wenn die Zykluszeit vorbei ist
-      if ((millis() - m_lastFetch) < m_cycletime)
-        return ExitCode::NO_ERROR;
-
-      m_lastFetch = millis();
-
-      // Falls das Gerät nicht verbunden/initialisiert ist zweimal versuchen, sonst mit Fehler
-      // zurückkehren
-      for (int i = 1; i < 3; i++)
-      {
-        if (m_isConnected)
-        {
-          serialinfo("Nunchuk bereit zur Kommunikation");            
-          break;
-        }
-        else
-        {
-          begin();
-        }
-      }
-
-      if (!m_isConnected)
-      {
-          serialerror("Verbindungsaufbau nach 3 Versuchen fehlgeschlagen.", ExitCode::NOT_CONNECTED);
-          return m_lastError = ExitCode::NOT_CONNECTED;
-      }
+      m_state = State::BEGIN;
       
-      // Rohdaten vom Gerät anfordern
+      serialverbose("Nunchuk-Initialisierung gestartet.");
+
+      // Initialisierungssequenz
       enable();
 
       Wire.beginTransmission(m_addr);
-      Wire.write(Control::REG_RAW_DATA);
+      // erstes Initialisierungsregister
+      Wire.write(static_cast<uint8_t>(0xF0));
+      // auf ersten Initialisierungswert setzen
+      Wire.write(static_cast<uint8_t>(0x55));
       Wire.endTransmission(true);
 
-      delayMicroseconds(1);
+      delay(1);
 
-      if (Wire.requestFrom(m_addr, Control::LEN_RAW_DATA) != Control::LEN_RAW_DATA)
+      Wire.beginTransmission(m_addr);
+      // zweites Initialisierungsregister
+      Wire.write(static_cast<uint8_t>(0xFB));
+      // auf zweiten Initialisierungswert setzen
+      Wire.write(static_cast<uint8_t>(0x00));
+
+      switch (Wire.endTransmission(true))
       {
-          disable();
+      case WireReturnCode::SUCCESS:
+        serialinfo("Nunchuk-Initalisierung erfolgreich.");
+        m_state = State::CONNECTED;
+        break;
 
-          // falls Fehler bei der Kommunikation, das Gerät als getrennt markieren und mit
-          // Fehler zurückkehren
-          m_isConnected = false;
-          serialerror("Übertragung fehlgeschlagen.", ExitCode::NOT_CONNECTED);
-          return m_lastError = ExitCode::NOT_CONNECTED;
+      case WireReturnCode::DATA_TOO_LONG:
+        serialerror("Übertragungsfehler: Zu viele Daten für Übertragungspuffer.", State::BAD_VALUE);
+        m_state = State::BAD_VALUE;
+        [[fallthrough]];
+
+      case WireReturnCode::NACK_ON_ADDR:
+        serialerror("Übertragungsfehler: NACK erhalten bei Übertragung der Adresse.", State::BAD_VALUE);
+        m_state = State::BAD_VALUE;
+        [[fallthrough]];
+        
+      case WireReturnCode::NACK_ON_DATA:
+        serialerror("Übertragungsfehler: NACK erhalten bei Übertragung der Daten.", State::BAD_VALUE);
+        m_state = State::BAD_VALUE;
+        [[fallthrough]];
+
+      case WireReturnCode::OTHER:
+        serialerror("Übertragungsfehler: Allgemeiner Fehler.", State::ERROR_OCCURED);
+        m_state = State::ERROR_OCCURED;
+        [[fallthrough]];
+
+      case WireReturnCode::TIMEOUT:
+        serialerror("Übertragungsfehler: Nunchuk braucht zu lange zum Antworten.", State::TIMEOUT);
+        m_state = State::TIMEOUT;
+        [[fallthrough]];
+
+      default:
+        m_state = State::NOT_CONNECTED;
+        break;
       }
       disable();
+      return m_state;
+    }
 
-      if constexpr (debugmode > 1)
+    State Nunchuk::read()
+    {
+      switch (m_state)
       {
-        auto msg = String("Anzahl der verfügbaren Bytes: ");
-        msg += String(Wire.available());
-        serialverbose(msg.c_str());
-      }
+      case State::CONNECTED:
+        // erst lesen, wenn die Zykluszeit vorbei ist
+        if ((millis() - m_lastFetch) >= m_cycletime)
+        {
+          m_lastFetch = millis();
+        }
 
-      // empfangene Daten auslesen
-      for (uint8_t i = 0; (i < Control::LEN_RAW_DATA) && Wire.available(); i++)
-      {
-          m_raw[i] = Wire.read();
-      }
+        // Rohdaten vom Gerät anfordern
+        enable();
 
-      // ggf. Rohdaten ausgeben
-      if constexpr (debugmode > 0)
-      {
-        serialinfo("Rohdaten:");
-          for (uint8_t i = 0; i < Control::LEN_RAW_DATA; i++)
+        Wire.beginTransmission(m_addr);
+        Wire.write(Control::REG_RAW_DATA);
+        Wire.endTransmission(true);
+
+        delayMicroseconds(1);
+
+        if (Wire.requestFrom(m_addr, Control::LEN_RAW_DATA) != Control::LEN_RAW_DATA)
+        {
+  
+            // falls Fehler bei der Kommunikation, das Gerät als getrennt markieren und mit
+            // Fehler zurückkehren
+            m_state = State::NOT_CONNECTED;
+            serialerror("Übertragung fehlgeschlagen.", m_state);
+        }
+        disable();
+
+        if constexpr (debugmode > 1)
+        {
+          auto msg = String("Anzahl der verfügbaren Bytes: ");
+          msg += String(Wire.available());
+          serialverbose(msg.c_str());
+        }
+
+        // empfangene Daten auslesen
+        for (uint8_t i = 0; (i < Control::LEN_RAW_DATA) && Wire.available(); i++)
+        {
+            m_raw[i] = Wire.read();
+        }
+        
+        // ggf. Rohdaten ausgeben
+        if constexpr (debugmode > 0)
+        {
+          serialinfo("Rohdaten:");
+            for (uint8_t i = 0; i < Control::LEN_RAW_DATA; i++)
+            {
+              Serial.print(m_raw[i], HEX);
+              Serial.print(" ");
+            }
+            Serial.println();
+        }
+        break;
+
+      case State::NOT_CONNECTED:
+        // Falls das Gerät nicht verbunden/initialisiert ist zweimal versuchen, sonst mit Fehler
+        // zurückkehren
+        for (int i = 1; i <= 3; i++)
+        {
+          begin();
+          
+          if (m_state == State::CONNECTED)
           {
-            Serial.print(m_raw[i], HEX);
-            Serial.print(" ");
+            serialinfo("Nunchuk bereit zur Kommunikation");
+            break;
           }
-          Serial.println();
+          else
+          {
+            serialerror("Verbindungsaufbau nach 3 Versuchen fehlgeschlagen.", m_state);
+          }
+        }
+      
+      default:
+        m_state = State::ERROR_OCCURED;
+        break;
       }
 
-      return ExitCode::NO_ERROR;
+      return m_state;
     }
 
     const bool Nunchuk::decodeButtonZ() const
     {
-        return !static_cast<bool>((m_raw[5] & Bitmasks::BUTTON_Z_STATE) >> 0);
+        return !static_cast<bool>((m_raw[5] & Bitmask::BUTTON_Z_STATE) >> 0);
     }
 
     const bool Nunchuk::decodeButtonC() const
     {
-        return !static_cast<bool>((m_raw[5] & Bitmasks::BUTTON_C_STATE) >> 1);
+        return !static_cast<bool>((m_raw[5] & Bitmask::BUTTON_C_STATE) >> 1);
     }
 
     const int16_t Nunchuk::decodeAccelerationX() const
     {
-        return static_cast<int16_t>((m_raw[2] << 2) | (static_cast<uint16_t>((m_raw[5] >> 2) & Bitmasks::ACC_X_BIT_0_1))
+        return static_cast<int16_t>((m_raw[2] << 2) | (static_cast<uint16_t>((m_raw[5] >> 2) & Bitmask::ACC_X_BIT_0_1))
             - Acceleration::X_NULL);
     }
 
     const int16_t Nunchuk::decodeAccelerationY() const
     {
-        return static_cast<int16_t>((m_raw[3] << 2) | (static_cast<uint16_t>((m_raw[5] >> 4) & Bitmasks::ACC_Y_BIT_0_1))
+        return static_cast<int16_t>((m_raw[3] << 2) | (static_cast<uint16_t>((m_raw[5] >> 4) & Bitmask::ACC_Y_BIT_0_1))
             - Acceleration::Y_NULL);
     }
 
     const int16_t Nunchuk::decodeAccelerationZ() const
     {
-        return static_cast<int16_t>((m_raw[4] << 2) | (static_cast<uint16_t>((m_raw[5]>> 6) & Bitmasks::ACC_Z_BIT_0_1) )
+        return static_cast<int16_t>((m_raw[4] << 2) | (static_cast<uint16_t>((m_raw[5]>> 6) & Bitmask::ACC_Z_BIT_0_1) )
             - Acceleration::Z_NULL);
     }
 
@@ -317,10 +317,10 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
 
     void Nunchuk::print()
     {
-      if (!m_isConnected)
+      if (isConnected())
       {
-        serialerror("Es liegen keine neuen Sensorendaten vor.", ExitCodes::NO_DATA_AVAILABLE);
-        m_lastError = ExitCodes::NO_DATA_AVAILABLE;
+        m_state = State::NO_DATA_AVAILABLE;
+        serialerror("Es liegen keine neuen Sensorendaten vor.", m_state);
         return;
       }
       
@@ -360,7 +360,7 @@ void serialerror(const char* annotation = nullptr, const ExitCode code = 0x00)
       if (m_pinLevelshifter == 0xFF)
         return;
         
-      serialverbose("Pegelwandler deaktiviert.")
+      serialverbose("Pegelwandler deaktiviert.");
       digitalWrite(m_pinLevelshifter, LOW);
       delayMicroseconds(500);
     }

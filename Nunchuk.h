@@ -40,11 +40,18 @@ namespace communication
      * Definitionen von Konstanten *
      **************************/
 
-    // Exitcodes der Methoden
-    enum class ExitCode : uint16_t
+    // Zustand des Automaten
+    enum class State
     {
-        // kein Fehler
-        NO_ERROR = 0,
+        // Startzustand
+        BEGIN = 0,
+
+        // Nunchuk über I2C verbunden (Endzustand)
+        CONNECTED,
+
+        /******************
+         * Fehlerzustände *
+         ******************/
 
         // allgemeiner Fehler
         ERROR_OCCURED,
@@ -275,11 +282,11 @@ namespace communication
         const bool isConnected() const;
 
         /**
-         * @brief   Gibt den letzten aufgetretenen Fehler zurück
+         * @brief   Gibt den aktuellen Zustand des Automaten zurück
          * 
-         * @return enum class ExitCode des letzten aufgetretenen Fehlers zurück
+         * @return enum class State des Automaten
          */
-        const ExitCode getLastError() const;
+        const State getState() const;
 
         // Andere Methoden
 
@@ -289,14 +296,14 @@ namespace communication
          *
          * @return  enum class Exitcode der Methode
          */
-        ExitCode begin();
+        State begin();
 
         /**
          * @brief   Liest die aktuellen Sensorwerte vom Nunchuk über den I2C-Bus.
          *
          * @return  enum class Exitcode der Methode
          */
-        ExitCode read();
+        State read();
 
         /**
          * @brief   Extrahiert den Gedrücktstatus des Buttons Z aus dem zusammengesetzten Register.
@@ -376,14 +383,11 @@ namespace communication
         // Adresse des korrespondierenden Nunchuks
         const uint8_t m_addr;
 
-        // Code des letzten Aufgetretenen Fehlers
-        ExitCode m_lastError;
-
-        // Verbundenheitsstatus des Geräts
-        bool m_isConnected;
+        // aktueller Zustand des Automaten
+        State m_state;
 
         // Zeitspanne nach der erneut Daten vom Nunchuk angefordert werden
-        const unsigned long m_cycleTime;
+        const unsigned long m_cycletime;
 
         // Zeitpunkt zu dem zuletzt neue Daten angefordert wurden
         unsigned long m_lastFetch;
