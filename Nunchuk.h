@@ -34,6 +34,8 @@
 
 #include <Arduino.h>
 
+#include "Button.h"
+
 namespace communication
 {
     /**************************
@@ -373,6 +375,24 @@ namespace communication
          * @return  none
          */
         void disable() const;
+
+        class ButtonC : public Button
+        {
+        	public:
+                using Button::Button;
+        		const State getState() const override;
+        };
+
+
+        class ButtonZ : public Button
+        {
+        	public:
+                using Button::Button;
+        		const State getState() const override;
+        };
+        
+        ButtonC m_buttonC; // Repräsentation des C-Buttons
+        ButtonZ m_buttonZ; // Repräsentation des Z-Buttons
 
         // Enable Pin des Pegelwandlers für den I2C-Bus
         const uint8_t m_pinLevelshifter;

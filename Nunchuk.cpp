@@ -32,6 +32,8 @@
 
 #include "Nunchuk.h"
 
+#include "Button.h"
+
 #include <Wire.h>
 
 namespace communication
@@ -90,7 +92,9 @@ void serialerror(const char* annotation, const State code)
         m_raw { 0x00 },
         m_state{ State::BEGIN },
         m_cycletime { cycletime },
-        m_lastFetch { millis() }
+        m_lastFetch { millis() },
+        m_buttonC {this},
+        m_buttonZ {this}
     {
       Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
@@ -102,7 +106,9 @@ void serialerror(const char* annotation, const State code)
         m_raw { 0x00 },
         m_state{ State::BEGIN },
         m_cycletime { cycletime },
-        m_lastFetch { millis() }
+        m_lastFetch { millis() },
+        m_buttonC {this},
+        m_buttonZ {this}
     {
       Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
@@ -364,4 +370,14 @@ void serialerror(const char* annotation, const State code)
       digitalWrite(m_pinLevelshifter, LOW);
       delayMicroseconds(500);
     }
+
+  const Button::State Nunchuk::ButtonC::getState() const
+	{
+		return m_device->decodeButtonC() ? State::PRESSED : State::RELEASED;
+	}
+
+	const Button::State Nunchuk::ButtonZ::getState() const
+	{
+		return m_device->decodeButtonZ() ? State::PRESSED : State::RELEASED;
+	}
 }
