@@ -317,7 +317,7 @@ void serialerror(const char* annotation, const State code)
 
     void Nunchuk::print()
     {
-      if (isConnected())
+      if (!isConnected())
       {
         m_state = State::NO_DATA_AVAILABLE;
         serialerror("Es liegen keine neuen Sensorendaten vor.", m_state);
