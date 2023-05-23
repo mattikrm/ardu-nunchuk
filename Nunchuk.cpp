@@ -86,27 +86,39 @@ void serialerror(const char* annotation, const State code)
   }
 }
 
-    Nunchuk::Nunchuk(const unsigned long cycletime, const ClockMode mode)
+    Nunchuk::Nunchuk(const unsigned long buttonTimeout,
+      const unsigned long cycletime,
+      const ClockMode mode)
         : m_pinLevelshifter { 0xFF },
         m_raw { 0x00 },
         m_state{ State::BEGIN },
         m_cycletime { cycletime },
         m_lastFetch { millis() },
-        m_buttonC {this},
-        m_buttonZ {this}
+        m_buttonC {this, buttonTimeout},
+        m_buttonZ {this, buttonTimeout}
     {
       Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
     }
 
-    Nunchuk::Nunchuk(const uint8_t lvlshft, const unsigned long cycletime, const ClockMode mode)
+    Nunchuk::Nunchuk(const uint8_t lvlshft,
+      const unsigned long buttonTimeout,
+      const unsigned long cycletime,
+      const ClockMode mode)
+        : Nunchuk(lvlshft, buttonTimeout, buttonTimeout, cycletime, mode)
+    {}
+
+    Nunchuk::Nunchuk(const uint8_t lvlshft,
+      const unsigned long cTimeout, const unsigned long zTimeout,
+      const unsigned long cycletime,
+      const ClockMode mode)
         :  m_pinLevelshifter { lvlshft },
         m_raw { 0x00 },
         m_state{ State::BEGIN },
         m_cycletime { cycletime },
         m_lastFetch { millis() },
-        m_buttonC {this},
-        m_buttonZ {this}
+        m_buttonC {this, cTimeout},
+        m_buttonZ {this, zTimeout}
     {
       Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));

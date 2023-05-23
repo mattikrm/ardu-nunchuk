@@ -241,23 +241,46 @@ namespace communication
 
         /**
          * @brief   Konstruktor der Klasse Nunchuk.
-         *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz (Standard: Fast-Mode) und Adresse (Standard: 0x52).
+         *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz (Standard: Fast-Mode).
          * 
+         * @param buttonTimeout Dauer bis der Zustand der Buttons angepasst wird in ms
+         * @param cycletime Zykluszeit nach der wieder Daten angefordert werden in ms
          * @param mode Taktfrequenz der I2C-Schnittstelle
-         * @param cycletime Zykluszeit nach der wieder Daten angefordert werden
          */
-        Nunchuk(const unsigned long cycletime = 30, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
+        Nunchuk(const unsigned long buttonTimeout,
+            const unsigned long cycletime = 30,
+            const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
 
         /**
          * @brief   Konstruktor der Klasse Nunchuk.
-         *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz (Standard: Fast-Mode) und Adresse (Standard: 0x52).
+         *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz.
          *          Aktiviert außerdem den Enablepin des Pegelwandlers.
          * 
          * @param lvlshft Enable-Pin des Pegelwandlers für den I2C-Bus
-         * @param cycletime Zykluszeit nach der wieder Daten angefordert werden
+         * @param buttonTimeout Dauer bis der Zustand der Buttons angepasst wird in ms
+         * @param cycletime Zykluszeit nach der wieder Daten angefordert werden in ms
          * @param mode Taktfrequenz der I2C-Schnittstelle
          */
-        explicit Nunchuk(const uint8_t lvlshft, const unsigned long cycletime = 30, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
+        Nunchuk(const uint8_t lvlshft,
+            const unsigned long buttonTimeout,
+            const unsigned long cycletime = 30,
+            const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
+
+        /**
+         * @brief   Konstruktor der Klasse Nunchuk.
+         *          Initialisiert den I2C-Bus mit der übergebenen Taktfrequenz.
+         *          Aktiviert außerdem den Enablepin des Pegelwandlers.
+         * 
+         * @param lvlshft Enable-Pin des Pegelwandlers für den I2C-Bus
+         * @param cTimeout Dauer bis der Zustand des C-Buttons angepasst wird in ms
+         * @param zTimeout Dauer bis der Zustand des Z-Buttons angepasst wird in ms
+         * @param cycletime Zykluszeit nach der wieder Daten angefordert werden in ms
+         * @param mode Taktfrequenz der I2C-Schnittstelle
+         */
+        Nunchuk(const uint8_t lvlshft,
+            const unsigned long cTimeout, const unsigned long zTimeout,
+            const unsigned long cycletime = 30,
+            const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
 
         /**
          * @brief   Destruktor der Klasse Nunchuk.
