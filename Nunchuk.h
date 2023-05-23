@@ -245,7 +245,7 @@ namespace communication
          * @param cycletime Zykluszeit nach der wieder Daten angefordert werden
          * @param addr I2C-Adresse des korrespondierenden Nunchuks
          */
-        Nunchuk(const unsigned long cycletime, const uint8_t addr, const ClockMode mode);
+        Nunchuk(const unsigned long cycletime = 30, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
 
         /**
          * @brief   Konstruktor der Klasse Nunchuk.
@@ -257,7 +257,7 @@ namespace communication
          * @param cycletime Zykluszeit nach der wieder Daten angefordert werden
          * @param mode Taktfrequenz der I2C-Schnittstelle
          */
-        explicit Nunchuk(const uint8_t lvlshft, const unsigned long cycletime, const uint8_t addr, const ClockMode mode);
+        explicit Nunchuk(const uint8_t lvlshft, const unsigned long cycletime = 30, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz);
 
         /**
          * @brief   Destruktor der Klasse Nunchuk.

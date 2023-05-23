@@ -47,7 +47,7 @@ void serialwrite(const char* mode = nullptr, const char* annotation = nullptr)
   Serial.println(annotation);
 }
 
-void serialverbose(const char* annotation = nullptr)
+void serialverbose(const char* annotation)
 {
   if constexpr (debugmode > 1)
   {
@@ -58,7 +58,7 @@ void serialverbose(const char* annotation = nullptr)
   }
 }
 
-void serialinfo(const char* annotation = nullptr)
+void serialinfo(const char* annotation)
 {
   if constexpr (debugmode > 0)
   {
@@ -69,7 +69,7 @@ void serialinfo(const char* annotation = nullptr)
   }
 }
 
-void serialerror(const char* annotation = nullptr, const State code)
+void serialerror(const char* annotation, const State code)
 {
   if constexpr (debugmode >= 0)
   {
@@ -84,7 +84,7 @@ void serialerror(const char* annotation = nullptr, const State code)
   }
 }
 
-    Nunchuk::Nunchuk(const unsigned long cycletime = 30, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
+    Nunchuk::Nunchuk(const unsigned long cycletime, const uint8_t addr, const ClockMode mode)
         : m_addr { addr },
         m_pinLevelshifter { 0xFF },
         m_raw { 0x00 },
@@ -96,7 +96,7 @@ void serialerror(const char* annotation = nullptr, const State code)
       Wire.setClock(static_cast<uint32_t>(mode));
     }
 
-    explicit Nunchuk::Nunchuk(const uint8_t lvlshft, const unsigned long cycletime = 30, const uint8_t addr = Control::ADDR_NUNCHUK, const ClockMode mode = ClockMode::I2C_CLOCK_FAST_400_kHz)
+    Nunchuk::Nunchuk(const uint8_t lvlshft, const unsigned long cycletime, const uint8_t addr, const ClockMode mode)
         : m_addr { addr },
         m_pinLevelshifter { lvlshft },
         m_raw { 0x00 },
