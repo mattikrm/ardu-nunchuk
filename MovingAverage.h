@@ -32,30 +32,16 @@ class RingBuffer
 		const T &read();
 		void write(const T& value);
 
-		constexpr size_t size() const;
-		constexpr const bool empty() const;
-
 		T &front();
 		const T &front() const;
-
 		T &back();
 		const T &back() const;
 
-		constexpr T *next(const T *iter) const;
-		constexpr T *prev(const T *iter) const;
-
-		constexpr const bool checkBounds(const T *iter) const;
-
 	private: // private Methoden
-		constexpr T *begin();
-		constexpr const T *cbegin() const noexcept;
-
-		constexpr T *end();
-		constexpr const T *cend() const noexcept;
+		constexpr size_t next() const;
 
 	private: // private Member
-		T *m_front; // nächstes zu lesendes Element
-		T *m_back; // nächstes zu beschreibendes Element
+		size_t m_index; // index des aktuellen Elements
 		const T m_data[Length]; // zugrundeliegender Speicher
 };
 
