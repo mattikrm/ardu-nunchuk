@@ -57,10 +57,11 @@ class MovingAverage
 		void shift(Integral next);
 
 		const double arithmeticMean() const;
-		const double median() const;
+		const int32_t cumulativeSum() const;
 
 	private: // private Member
 		RingBuffer<Integral, Width> m_data;
+		int32_t m_cumsum;
 };
 
 } // namespace communication

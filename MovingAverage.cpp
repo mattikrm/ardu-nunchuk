@@ -68,4 +68,42 @@ constexpr size_t RingBuffer<T, Length>::next() const
 	return (m_index + 1) % Length;
 }
 
+template <
+	typename Integral,
+	size_t Width
+>
+MovingAverage<Integral, Width>::MovingAverage()
+	: m_data{},
+	m_cumsum{0}
+{
+}
+
+template <
+	typename Integral,
+	size_t Width
+>
+void MovingAverage<Integral, Width>::shift(Integral next)
+{
+	m_data.write(next);
+	m_cumsum += m_data.front() - m_data.back();
+}
+
+template <
+	typename Integral,
+	size_t Width
+>
+const double MovingAverage<Integral, Width>::arithmeticMean() const
+{
+	return static_cast<double>(m_cumsum) / Width;
+}
+
+template <
+	typename Integral,
+	size_t Width
+>
+const int32_t MovingAverage<Integral, Width>::cumulativeSum() const
+{
+	return m_cumsum;
+}
+
 } // namespace communication
