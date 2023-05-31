@@ -378,14 +378,14 @@ namespace communication
          *          
          * @return  int8_t Joystickauslenkung relativ zur Mitte in X-Richtung (-125;130]
          */
-        const int8_t decodeJoystickX() const;
+        const int16_t decodeJoystickX() const;
 
         /**
          * @brief   Subtrahiert den Mittenwert vom Registerwert für die Position in Y-Richtung.
          *          
          * @return  int8_t Joystickauslenkung relativ zur Mitte in Y-Richtung (-126;129]
          */
-        const int8_t decodeJoystickY() const;
+        const int16_t decodeJoystickY() const;
 
         void print();
 
