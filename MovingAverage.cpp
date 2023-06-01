@@ -69,39 +69,35 @@ constexpr size_t RingBuffer<T, Length>::next() const
 }
 
 template <
-	typename Integral,
 	size_t Width
 >
-MovingAverage<Integral, Width>::MovingAverage()
+MovingAverage<Width>::MovingAverage()
 	: m_data{},
 	m_cumsum{0}
 {
 }
 
 template <
-	typename Integral,
 	size_t Width
 >
-void MovingAverage<Integral, Width>::shift(Integral next)
+void MovingAverage<Width>::shift(uint8_t next)
 {
 	m_data.write(next);
 	m_cumsum += m_data.front() - m_data.back();
 }
 
 template <
-	typename Integral,
 	size_t Width
 >
-const double MovingAverage<Integral, Width>::arithmeticMean() const
+const double MovingAverage<Width>::arithmeticMean() const
 {
 	return static_cast<double>(m_cumsum) / Width;
 }
 
 template <
-	typename Integral,
 	size_t Width
 >
-const int32_t MovingAverage<Integral, Width>::cumulativeSum() const
+const int32_t MovingAverage<Width>::cumulativeSum() const
 {
 	return m_cumsum;
 }

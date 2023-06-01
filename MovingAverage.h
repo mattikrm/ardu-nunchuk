@@ -46,21 +46,20 @@ class RingBuffer
 };
 
 template<
-	typename Integral, // Inhaltstyp des zugrundeliegenden Speichers
-	size_t Width // Anzahl der Elemente über die der Mittelwert gebildet werden soll
+	size_t Width
 >
 class MovingAverage
 {
 	public: // public Methoden
 		MovingAverage();
 
-		void shift(Integral next);
+		void shift(uint8_t next);
 
 		const double arithmeticMean() const;
 		const int32_t cumulativeSum() const;
 
 	private: // private Member
-		RingBuffer<Integral, Width> m_data;
+		RingBuffer<uint8_t, Width> m_data;
 		int32_t m_cumsum;
 };
 
