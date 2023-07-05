@@ -51,7 +51,7 @@ public: // Enumerationen
 		RELEASED, // nicht gedrückt
 		PRESSED_TIMEOUT, // wird gedrückt, wartend auf Timeout
 		PRESSED, // gedrückt
-		RELEASED_TIMOUT // wurde losgelassen, wartend auf das Timeout
+		RELEASED_TIMEOUT // wurde losgelassen, wartend auf das Timeout
 	};
 
 public: // public Methoden
@@ -60,27 +60,31 @@ public: // public Methoden
 	 * 		  Setzt den Nunchuk, dessen Knopf geprüft werden soll, sowie die
 	 * 		  Zeit nach der er seinen neuen Zustand annehmen soll.
 	 * 
-	 * @param dev Gerät dessen Button überwacht wird
 	 * @param duration Zeitspanne, nachder die Zustandsänderung angenommen wird
 	 */
-	Button(const Nunchuk *dev, const unsigned long duration = 30);
+	Button(const unsigned long duration = 30);
 
 	/**
-	 * @brief Bestimmt den Gedrücktzustand
+	 * @brief Gibt den Gedrücktzustand zurück
 	 * 
 	 * @return true Button wird gedrückt
 	 * @return false Button wird nicht gedrückt
 	 */
-	const bool isPressed();
+	const bool isPressed() const;
 
 	/**
-	 * @brief Bestimmt den Gedrücktzustand
+	 * @brief Gibt den Gedrücktzustand zurück
 	 * 
 	 * @return true Button wird nicht gedrückt
 	 * @return false Button wird gedrückt
 	 */
-	const bool isReleased();
+	const bool isReleased() const;
 
+	/**
+	 * @brief Bestimmt den Zutand des Buttons
+	 * 
+	 */
+	void exec();
 
 private: // private-Methoden
 	/**
@@ -90,9 +94,6 @@ private: // private-Methoden
 	 * @return State::RELEASED Button wird nicht gedrückt
 	 */
 	virtual const State getState() const = 0;
-
-protected: // protected Member
-	const Nunchuk *m_device; // Gerät dessen Button überwacht werden soll 
 
 private: // private Member
 	const unsigned long m_duration; // Zeitspanne, die der Button mindestens gedrück sein muss

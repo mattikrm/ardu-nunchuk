@@ -3,7 +3,7 @@
 
 using namespace communication;
 constexpr const uint8_t PIN_LVLSHFT_NUNCHUK{11};
-Nunchuk dev{Control::ADDR_NUNCHUK, PIN_LVLSHFT_NUNCHUK, ClockMode::I2C_CLOCK_FAST_400_kHz};
+Nunchuk dev{100, 50, ClockMode::I2C_CLOCK_FAST_400_kHz};
 
 
 void setup()

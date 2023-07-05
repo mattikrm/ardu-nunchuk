@@ -6,17 +6,17 @@
 
 namespace communication
 {
-	Button::Button(const Nunchuk *dev, const unsigned long duration)
+	Button::Button(const unsigned long duration)
 		: m_state{State::RELEASED},
 		m_duration{duration},
-		m_lastChange{millis()},
-		m_device {m_device}
+		m_lastChange{millis()}
 	{
 	}
 
-	const bool Button::isPressed()
+	void Button::exec()
 	{
 		const State currentState = getState();
+
 		switch (m_state)
 		{
 		case State::RELEASED:
@@ -41,19 +41,19 @@ namespace communication
 		case State::PRESSED:
 			if (currentState == State::RELEASED)
 			{
-				m_state = State::RELEASED_TIMOUT;
+				m_state = State::RELEASED_TIMEOUT;
 				m_lastChange = millis();
 			}
 			break;
 
-		case State::RELEASED_TIMOUT:
-			if (currentState == State::RELEASED)
+		case State::RELEASED_TIMEOUT:
+			if (currentState == State::PRESSED)
 			{
-				m_state = State::RELEASED;
+				m_state = State::PRESSED;
 			}
 			else if ((millis() - m_lastChange) >= m_duration)
 			{
-				m_state = State::PRESSED;
+				m_state = State::RELEASED;
 			}
 			break;
 		
@@ -62,8 +62,13 @@ namespace communication
 		}
 	}
 
-	const bool Button::isReleased()
+	const bool Button::isPressed() const
 	{
-		return !isPressed();
+		return (m_state == State::PRESSED || m_state == State::RELEASED_TIMEOUT) ? true : false;
+	}
+
+	const bool Button::isReleased() const
+	{
+		return (m_state == State::RELEASED || m_state == State::PRESSED_TIMEOUT) ? true : false;
 	}
 } // namespace communication

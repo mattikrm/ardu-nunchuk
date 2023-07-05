@@ -408,7 +408,12 @@ namespace communication
         {
         	public:
                 using Button::Button;
+                ButtonC(const Nunchuk *dev, const unsigned long duration);
+
         		const State getState() const override;
+
+            private:
+                const Nunchuk *m_device; // Gerät dessen Button überwacht werden soll 
         };
 
 
@@ -416,7 +421,12 @@ namespace communication
         {
         	public:
                 using Button::Button;
+                ButtonZ(const Nunchuk *dev, const unsigned long duration);
+
         		const State getState() const override;
+
+            private:
+                const Nunchuk *m_device; // Gerät dessen Button überwacht werden soll 
         };
         
         ButtonC m_buttonC; // Repräsentation des C-Buttons

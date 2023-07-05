@@ -32,8 +32,6 @@
 
 #include "Nunchuk.h"
 
-#include "Button.h"
-
 #include <Wire.h>
 
 namespace communication
@@ -212,10 +210,12 @@ void serialerror(const char* annotation, const State code)
       {
       case State::CONNECTED:
         // erst lesen, wenn die Zykluszeit vorbei ist
-        if ((millis() - m_lastFetch) >= m_cycletime)
+        if ((millis() - m_lastFetch) < m_cycletime)
         {
-          m_lastFetch = millis();
+          return State::NO_DATA_AVAILABLE;
         }
+
+        m_lastFetch = millis();
 
         // Rohdaten vom Gerät anfordern
         enable();
@@ -248,6 +248,9 @@ void serialerror(const char* annotation, const State code)
         {
             m_raw[i] = Wire.read();
         }
+
+        m_buttonC.exec();
+        m_buttonZ.exec();
         
         // ggf. Rohdaten ausgeben
         if constexpr (debugmode > 0)
@@ -385,6 +388,16 @@ void serialerror(const char* annotation, const State code)
       digitalWrite(m_pinLevelshifter, LOW);
       delayMicroseconds(500);
     }
+
+  Nunchuk::ButtonC::ButtonC(const Nunchuk *dev, const unsigned long duration)
+    : Button::Button(duration),
+    m_device(dev)
+  {}
+
+  Nunchuk::ButtonZ::ButtonZ(const Nunchuk *dev, const unsigned long duration)
+    : Button::Button(duration),
+    m_device(dev)
+  {}
 
   const Button::State Nunchuk::ButtonC::getState() const
 	{

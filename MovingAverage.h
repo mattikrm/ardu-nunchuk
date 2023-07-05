@@ -27,22 +27,46 @@ class RingBuffer
 		static constexpr const size_t npos = static_cast<size_t>(-1);
 
 	public: // public Methoden
-		RingBuffer();
+		RingBuffer()
+		: m_data{0},
+		  m_index{0}
+		{
+
+		}
 
 		const T &read();
-		void write(const T& value);
+		void write(const T& value)
+		{
+			front() = value;
+			m_index = next();
+		}
 
-		T &front();
-		const T &front() const;
-		T &back();
-		const T &back() const;
+		T &front()
+		{
+			return m_data[m_index];
+		}
+		const T &front() const
+		{
+			return m_data[m_index];
+		}
+		T &back()
+		{
+			return m_data[next()];
+		}
+		const T &back() const
+		{
+			return m_data[next()];
+		}
 
 	private: // private Methoden
-		constexpr size_t next() const;
+		constexpr size_t next() const
+		{
+			return (m_index + 1) % Length;
+		}
 
 	private: // private Member
 		size_t m_index; // index des aktuellen Elements
-		const T m_data[Length]; // zugrundeliegender Speicher
+		T m_data[Length]; // zugrundeliegender Speicher
 };
 
 template<
@@ -51,12 +75,26 @@ template<
 class MovingAverage
 {
 	public: // public Methoden
-		MovingAverage();
+		MovingAverage()
+		: m_data{},
+		  m_cumsum{0}
+		{
+		}
 
-		void shift(uint8_t next);
+		void shift(uint8_t next)
+		{
+			m_data.write(next);
+			m_cumsum += m_data.front() - m_data.back();
+		}
 
-		const double arithmeticMean() const;
-		const int32_t cumulativeSum() const;
+		const double arithmeticMean() const
+		{
+			return static_cast<double>(m_cumsum) / Width;
+		}
+		const int32_t cumulativeSum() const
+		{
+			return m_cumsum;
+		}
 
 	private: // private Member
 		RingBuffer<uint8_t, Width> m_data;
