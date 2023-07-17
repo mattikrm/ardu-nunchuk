@@ -9,7 +9,9 @@ namespace communication
 	Button::Button(const unsigned long duration)
 		: m_state{State::RELEASED},
 		m_duration{duration},
-		m_lastChange{millis()}
+		m_lastChange{millis()},
+		m_releasedCallback{nullptr},
+		m_pressedCallback{nullptr}
 	{
 	}
 
@@ -35,6 +37,11 @@ namespace communication
 			else if ((millis() - m_lastChange) >= m_duration)
 			{
 				m_state = State::PRESSED;
+
+				if (m_pressedCallback)
+				{
+					m_pressedCallback();
+				}
 			}
 			break;
 		
@@ -54,6 +61,11 @@ namespace communication
 			else if ((millis() - m_lastChange) >= m_duration)
 			{
 				m_state = State::RELEASED;
+
+				if (m_releasedCallback)
+				{
+					m_releasedCallback();
+				}
 			}
 			break;
 		

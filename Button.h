@@ -81,6 +81,26 @@ public: // public Methoden
 	const bool isReleased() const;
 
 	/**
+	 * @brief Registriert einen Callback, der beim Drücken des Buttons aufgerufen wird.
+	 *
+	 * @param pressedCallback Zeiger auf die Callback-Funktion, nullptr deregistriert den Callback
+	*/
+	void onPressed(void const (*pressedCallback)(void))
+	{
+		m_pressedCallback = pressedCallback;
+	}
+
+	/**
+	 * @brief Registriert einen Callback, der beim Loslassen des Buttons aufgerufen wird.
+	 *
+	 * @param releasedCallback Zeiger auf die Callback-Funktion, nullptr deregistriert den Callback
+	*/
+	void onReleased(void const (*releasedCallback)(void))
+	{
+		m_releasedCallback = releasedCallback;
+	}
+
+	/**
 	 * @brief Bestimmt den Zutand des Buttons
 	 * 
 	 */
@@ -99,6 +119,8 @@ private: // private Member
 	const unsigned long m_duration; // Zeitspanne, die der Button mindestens gedrück sein muss
 	unsigned long m_lastChange; // Zeitpunkt der letzten Änderung des Gedrücktzustands
 	State m_state; // Zustand des Automaten
+	void (*m_pressedCallback)(void);
+	void (*m_releasedCallback)(void);
 
 };
 	

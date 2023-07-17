@@ -336,6 +336,26 @@ namespace communication
         const bool pressedZ();
 
         /**
+        * @brief Registriert einen Callback, der beim Drücken des Buttons C aufgerufen wird.
+        *
+        * @param pressedCallback Zeiger auf die Callback-Funktion, nullptr deregistriert den Callback
+        */
+        void onPressedC(void const (*pressedCallback)(void))
+        {
+            m_buttonC.onPressed(pressedCallback);
+        }
+
+        /**
+        * @brief Registriert einen Callback, der beim Drücken des Buttons Z aufgerufen wird.
+        *
+        * @param pressedCallback Zeiger auf die Callback-Funktion, nullptr deregistriert den Callback
+        */
+        void onPressedZ(void const (*pressedCallback)(void))
+        {
+            m_buttonZ.onPressed(pressedCallback);
+        }
+
+        /**
          * @brief   Extrahiert den Gedrücktstatus des Buttons Z aus dem zusammengesetzten Register.
          *
          * @return  boolean Gedrücktstatus des Buttons Z [true: gedrückt | false: losgelassen]
