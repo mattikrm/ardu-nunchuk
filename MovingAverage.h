@@ -51,11 +51,11 @@ class RingBuffer
 		}
 		T &back()
 		{
-			return m_data[next()];
+			return m_data[(m_index - 1) % Length];
 		}
 		const T &back() const
 		{
-			return m_data[next()];
+			return m_data[(m_index - 1) % Length];
 		}
 
 	private: // private Methoden
