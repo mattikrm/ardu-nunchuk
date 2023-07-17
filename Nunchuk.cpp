@@ -95,7 +95,6 @@ void serialerror(const char* annotation, const State code)
         m_buttonC {this, buttonTimeout},
         m_buttonZ {this, buttonTimeout}
     {
-      Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
     }
 
@@ -118,7 +117,6 @@ void serialerror(const char* annotation, const State code)
         m_buttonC {this, cTimeout},
         m_buttonZ {this, zTimeout}
     {
-      Wire.begin();
       Wire.setClock(static_cast<uint32_t>(mode));
 
       pinMode(m_pinLevelshifter, OUTPUT);
@@ -141,12 +139,11 @@ void serialerror(const char* annotation, const State code)
     }
 
     State Nunchuk::begin()
-    {
-      m_state = State::BEGIN;
-      
+    {      
       serialverbose("Nunchuk-Initialisierung gestartet.");
 
       // Initialisierungssequenz
+      Wire.begin();
       enable();
 
       Wire.beginTransmission(Control::ADDR_NUNCHUK);
