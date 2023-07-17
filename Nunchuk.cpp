@@ -220,11 +220,7 @@ void serialerror(const char* annotation, const State code)
         // Rohdaten vom Gerät anfordern
         enable();
 
-        Wire.beginTransmission(Control::ADDR_NUNCHUK);
-        Wire.write(Control::REG_RAW_DATA);
-        Wire.endTransmission(true);
-
-        delayMicroseconds(1);
+        //delayMicroseconds(1);
 
         if (Wire.requestFrom(Control::ADDR_NUNCHUK, Control::LEN_RAW_DATA) != Control::LEN_RAW_DATA)
         {
@@ -234,7 +230,6 @@ void serialerror(const char* annotation, const State code)
             m_state = State::NOT_CONNECTED;
             serialerror("Übertragung fehlgeschlagen.", m_state);
         }
-        disable();
 
         if constexpr (debugmode > 1)
         {
@@ -248,6 +243,12 @@ void serialerror(const char* annotation, const State code)
         {
             m_raw[i] = Wire.read();
         }
+
+        Wire.beginTransmission(Control::ADDR_NUNCHUK);
+        Wire.write(Control::REG_RAW_DATA);
+        Wire.endTransmission(true);
+
+        disable();
 
         m_buttonC.exec();
         m_buttonZ.exec();
