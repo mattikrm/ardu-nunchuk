@@ -70,6 +70,7 @@ class RingBuffer
 };
 
 template<
+	class T,
 	size_t Width
 >
 class MovingAverage
@@ -81,7 +82,7 @@ class MovingAverage
 		{
 		}
 
-		void shift(uint8_t next)
+		void shift(T next)
 		{
 			m_data.write(next);
 			m_cumsum += m_data.front() - m_data.back();
@@ -97,7 +98,7 @@ class MovingAverage
 		}
 
 	private: // private Member
-		RingBuffer<uint8_t, Width> m_data;
+		RingBuffer<T, Width> m_data;
 		int32_t m_cumsum;
 };
 
