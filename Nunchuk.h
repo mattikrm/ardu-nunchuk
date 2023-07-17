@@ -326,14 +326,14 @@ namespace communication
          * 
          * @return  boolean Gedrücktstatus des Buttons C [true: gedrückt | false: losgelassen]
          */
-        const bool pressedC();
+        const bool pressedC() const;
 
         /**
          * @brief Bestimmt den Gedrücktzustand des Buttons Z
          * 
          * @return  boolean Gedrücktstatus des Buttons Z [true: gedrückt | false: losgelassen]
          */
-        const bool pressedZ();
+        const bool pressedZ() const;
 
         /**
         * @brief Registriert einen Callback, der beim Drücken des Buttons C aufgerufen wird.

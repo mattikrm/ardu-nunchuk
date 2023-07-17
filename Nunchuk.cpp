@@ -289,12 +289,12 @@ void serialerror(const char* annotation, const State code)
       return m_state;
     }
 
-    const bool Nunchuk::pressedC()
+    const bool Nunchuk::pressedC() const
     {
       return m_buttonC.isPressed();
     }
 
-    const bool Nunchuk::pressedZ()
+    const bool Nunchuk::pressedZ() const
     {
       return m_buttonZ.isPressed();
     }
