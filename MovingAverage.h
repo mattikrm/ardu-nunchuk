@@ -6,9 +6,15 @@
 namespace communication
 {
 
+/**
+ * @brief Klassen-Template eines Ringpuffers.
+ * 
+ * @tparam T Datentyp der Elemente
+ * @tparam Length Anzahl der Elemente
+ */
 template<
-	class T, // Inhaltsdatentyp
-	size_t Length // Anzahl der Elemente im Speicher
+	class T,
+	size_t Length
 >
 class RingBuffer
 {
@@ -34,13 +40,22 @@ class RingBuffer
 
 		}
 
-		const T &read();
+		/**
+		 * @brief Schreibt in den Ringpuffer und inkrementiert die Position
+		 * 
+		 * @param value Referenz auf zu schreibenden Wert
+		 */
 		void write(const T& value)
 		{
 			front() = value;
 			m_index = next();
 		}
 
+		/**
+		 * @brief Gibt Referenz auf erstes (aktuelles) Elemment im Speicher zurück
+		 * 
+		 * @return T& Referenz auf erstes Element
+		 */
 		T &front()
 		{
 			return m_data[m_index];
@@ -49,6 +64,12 @@ class RingBuffer
 		{
 			return m_data[m_index];
 		}
+
+		/**
+		 * @brief Gibt Referenz auf letztes (nächsten) Element im Speicher zurück
+		 * 
+		 * @return T& Referenz auf letztes Element im Speicher
+		 */
 		T &back()
 		{
 			return m_data[(m_index - 1) % Length];
@@ -59,16 +80,28 @@ class RingBuffer
 		}
 
 	private: // private Methoden
+		/**
+		 * @brief Gibt den nächsten Index im Ringpuffer zurück
+		 * 
+		 * @return constexpr size_t nächster Index in [0;Length)
+		 */
 		constexpr size_t next() const
 		{
 			return (m_index + 1) % Length;
 		}
 
 	private: // private Member
-		size_t m_index; // index des aktuellen Elements
+		size_t m_index; // Index des ersten Elements
 		T m_data[Length]; // zugrundeliegender Speicher
 };
 
+/**
+ * @brief Klassen-Template zur Ermittlung des ungewichteten,
+ * gleitenden Mittelwertes einer (Ganz-)Zahlenreihe
+ * 
+ * @tparam T (Ganzzahl-)Datentyp der Elemente
+ * @tparam Width Anzahl der Elemente
+ */
 template<
 	class T,
 	size_t Width
@@ -76,22 +109,42 @@ template<
 class MovingAverage
 {
 	public: // public Methoden
+		/**
+		 * @brief Kontruiert eine neues Objekt der Klasse Moving Average
+		 */
 		MovingAverage()
 		: m_data{},
 		  m_cumsum{0}
 		{
 		}
 
+		/**
+		 * @brief Fügt neues Element hinzu, löscht ggf. ältestes Element.
+		 * Aktualisiert die kumulative Summe der Elemente.
+		 * 
+		 * @param next neu hinzuzufügendes Element
+		 */
 		void shift(T next)
 		{
 			m_data.write(next);
 			m_cumsum += m_data.front() - m_data.back();
 		}
 
+		/**
+		 * @brief Gibt den ungewichteten arithm. Mittelwert zurück
+		 * 
+		 * @return const double arithm. Mittelwert der Elemente
+		 */
 		const double arithmeticMean() const
 		{
 			return static_cast<double>(m_cumsum) / Width;
 		}
+
+		/**
+		 * @brief Gibt die kumulative Summe der Elemente aus
+		 * 
+		 * @return const int32_t kumulative Summe der Elemente
+		 */
 		const int32_t cumulativeSum() const
 		{
 			return m_cumsum;
