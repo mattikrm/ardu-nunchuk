@@ -71,7 +71,7 @@ class RingBuffer
 		}
 
 		/**
-		 * @brief Gibt Referenz auf letztes (nächsten) Element im Speicher zurück
+		 * @brief Gibt Referenz auf letztes Element im Speicher zurück
 		 * 
 		 * @return T& Referenz auf letztes Element im Speicher
 		 */
