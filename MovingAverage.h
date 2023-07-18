@@ -33,6 +33,9 @@ class RingBuffer
 		static constexpr const size_t npos = static_cast<size_t>(-1);
 
 	public: // public Methoden
+		/**
+		 * @brief Kontruiert ein neues Objekt der RingBuffer Klasse
+		 */
 		RingBuffer()
 		: m_data{0},
 		  m_index{0}
@@ -47,8 +50,10 @@ class RingBuffer
 		 */
 		void write(const T& value)
 		{
-			front() = value;
+			/* Position aktualisieren*/
 			m_index = next();
+			/* Wert schreiben */
+			front() = value;
 		}
 
 		/**
@@ -72,11 +77,11 @@ class RingBuffer
 		 */
 		T &back()
 		{
-			return m_data[(m_index - 1) % Length];
+			return m_data[next()];
 		}
 		const T &back() const
 		{
-			return m_data[(m_index - 1) % Length];
+			return m_data[next()];
 		}
 
 	private: // private Methoden
@@ -88,6 +93,16 @@ class RingBuffer
 		constexpr size_t next() const
 		{
 			return (m_index + 1) % Length;
+		}
+
+		/**
+		 * @brief Gibt den vorherigen Index im Ringpuffer zurück
+		 * 
+		 * @return constexpr size_t vorheriger Index in [0;Length)
+		 */
+		constexpr size_t prev() const
+		{
+			return (m_index - 1) % Length;
 		}
 
 	private: // private Member

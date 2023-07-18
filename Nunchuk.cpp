@@ -329,12 +329,12 @@ void serialerror(const char* annotation, const State code)
 
     const int16_t Nunchuk::decodeJoystickX() const
     {
-        return Joystick::X_NULL - m_raw[0];
+        return m_raw[0] - Joystick::X_NULL;
     }
 
     const int16_t Nunchuk::decodeJoystickY() const
     {
-        return Joystick::Y_NULL - m_raw[1];
+        return m_raw[1] - Joystick::Y_NULL;
     }
 
     void Nunchuk::print()
