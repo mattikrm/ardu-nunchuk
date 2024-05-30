@@ -71,17 +71,10 @@ void serialinfo(const char* annotation)
 
 void serialerror(const char* annotation, const State code)
 {
-  if constexpr (debugmode >= 0)
-  {
-  if (!annotation)
+  if (!annotation || !Serial)
     return;
 
-  static char buffer[270] = {0x00};
-  static_assert(sizeof(annotation) <= 255, "Annotation zu lang. Maximal 255 Zeichen zulässig.");
-
-  sprintf(buffer, "%s (Code: %X)", annotation, static_cast<uint16_t>(code));
-  serialwrite("error", buffer);
-  }
+  serialwrite("error", annotation);
 }
 
     Nunchuk::Nunchuk(const unsigned long buttonTimeout,
