@@ -224,7 +224,7 @@ namespace communication
   // >= 0   Fehlermedlungen werden ausgegeben
   // > 0    informelle Benachrichtungen werden ausgegeben
   // > 1    erweiterte Informationen (v. a. für Debugging) werden ausgegeben
-  constexpr const int8_t debugmode{2};
+  constexpr const int8_t debugmode{0};
 
     /******************************
      * Definition der Hauptklasse *
